@@ -4,6 +4,7 @@ import com.example.syncmeet.dto.EventDTO;
 import com.example.syncmeet.model.Event;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface EventService {
 
@@ -12,7 +13,12 @@ public interface EventService {
     Event toEntity(EventDTO eventDTO);
 
     EventDTO getEventById(Long id);
-    EventDTO getEventByStartDateBetween(LocalDateTime start, LocalDateTime end);
+
+    List<EventDTO> getActiveEventsByStartDateBetween(LocalDateTime start, LocalDateTime end);
+
+    List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end);
+
+    void acceptEvent(Long id);
 
     EventDTO createEvent(EventDTO eventDTO);
 

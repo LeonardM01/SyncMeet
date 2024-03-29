@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -41,9 +43,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDTO getEventByStartDateBetween(LocalDateTime start, LocalDateTime end) {
-        return eventRepository.findEventByStartDateTimeBetween(start, end).map(this::toDTO).
-                orElseThrow(() -> new EntityNotFoundException("Couldn't find event with start date between specified time"));
+    public List<EventDTO> getActiveEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
+        return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsFalse(start, end)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
+        return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsTrue(start, end)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public void acceptEvent(Long id) {
+        EventDTO event = getEventById(id);
+        event.setPending(false);
+        eventRepository.save(toEntity(event));
     }
 
     @Override
@@ -54,7 +69,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDTO updateEvent(EventDTO event, Long id) {
         if (!eventRepository.existsById(id)) {
-            throw new EntityNotFoundException("User not found");
+            throw new EntityNotFoundException("Event not found");
         }
 
         return createEvent(event);

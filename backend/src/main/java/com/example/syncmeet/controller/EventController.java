@@ -1,13 +1,16 @@
 package com.example.syncmeet.controller;
 
-import com.example.syncmeet.dto.EventDTO;
+import com.example.syncmeet.dto.*;
 import com.example.syncmeet.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,7 +23,7 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @PostMapping("/api/event/create")
+    @PostMapping("/api/event")
     public ResponseEntity<Map<String, Object>> createEvent(@Valid @RequestBody EventDTO event) {
         eventService.createEvent(event);
         Map<String, Object> response = new HashMap<>();
@@ -28,68 +31,96 @@ public class EventController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("api/event/{id}")
+    @GetMapping("/api/event/active")
+    public ResponseEntity<List<EventDTO>> getActiveEventsByStartDateBetween(
+            @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        return ResponseEntity.ok(eventService.getActiveEventsByStartDateBetween(startDate, endDate));
+    }
+
+    @GetMapping("/api/event/pending")
+    public ResponseEntity<List<EventDTO>> getPendingEventsByStartDateBetween(
+            @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        return ResponseEntity.ok(eventService.getPendingEventsByStartDateBetween(startDate, endDate));
+    }
+
+    @GetMapping("/api/event/{id}")
     public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
-    @PutMapping("api/event/update_name/{id}")
+    @PutMapping("/api/event/name/{id}")
     public ResponseEntity<EventDTO> updateName(
             @PathVariable Long id,
-            @RequestBody String name
-    ) {
+            @Valid @RequestBody EventNameUpdateRequestDTO eventNameUpdateRequest
+            ) {
         EventDTO event = eventService.getEventById(id);
-        event.setName(name);
+        event.setName(eventNameUpdateRequest.getName());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("api/event/update_desc/{id}")
+    @PutMapping("/api/event/description/{id}")
     public ResponseEntity<EventDTO> updateDescription(
             @PathVariable Long id,
-            @RequestBody String desc
-    ) {
+            @RequestBody EventDescriptionUpdateRequestDTO eventDescriptionUpdateRequest
+            ) {
         EventDTO event = eventService.getEventById(id);
-        event.setDescription(desc);
+        event.setDescription(eventDescriptionUpdateRequest.getDescription());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("api/event/update_color/{id}")
+    @PutMapping("/api/event/color/{id}")
     public ResponseEntity<EventDTO> updateColor(
             @PathVariable Long id,
-            @RequestBody String color
-    ) {
+            @RequestBody EventColorUpdateRequestDTO eventColorUpdateRequest
+            ) {
         EventDTO event = eventService.getEventById(id);
-        event.setColor(color);
+        event.setColor(eventColorUpdateRequest.getColor());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("api/event/update_visible/{id}")
+    @PutMapping("/api/event/visible/{id}")
     public ResponseEntity<EventDTO> updateVisibility(
             @PathVariable Long id,
-            @RequestBody boolean visible
-    ) {
+            @RequestBody EventVisibleUpdateRequestDTO eventVisibleUpdateRequest
+            ) {
         EventDTO event = eventService.getEventById(id);
-        event.setVisible(visible);
+        event.setVisible(eventVisibleUpdateRequest.isVisible());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("api/event/update_recurring/{id}")
-    public ResponseEntity<EventDTO> updateRecurrance(
+    @PutMapping("/api/event/recurring/{id}")
+    public ResponseEntity<EventDTO> updateRecurrence(
             @PathVariable Long id,
-            @RequestBody boolean recurring
+            @RequestBody EventRecurringUpdateRequestDTO eventRecurringUpdateRequest
     ) {
         EventDTO event = eventService.getEventById(id);
-        event.setRecurring(recurring);
+        event.setRecurring(eventRecurringUpdateRequest.isRecurring());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("api/event/update_pending/{id}")
-    public ResponseEntity<EventDTO> updatePending(
-            @PathVariable Long id,
-            @RequestBody boolean pending
-    ) {
+    @PutMapping("/api/event/accept/{id}")
+    public ResponseEntity<Map<String, Object>> acceptEvent(@PathVariable Long id) {
+        eventService.acceptEvent(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Event accepted");
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/api/event/{id}")
+    public ResponseEntity<Map<String, Object>> rejectEvent(@PathVariable Long id) {
         EventDTO event = eventService.getEventById(id);
-        event.setPending(pending);
-        return ResponseEntity.ok(eventService.updateEvent(event, id));
+        Map<String, Object> response = new HashMap<>();
+        if (event.isPending()) {
+            response.put("message", "Event rejected");
+        }
+        else {
+            response.put("message", "Event removed");
+        }
+        eventService.deleteEvent(id);
+        return ResponseEntity.ok(response);
     }
 }

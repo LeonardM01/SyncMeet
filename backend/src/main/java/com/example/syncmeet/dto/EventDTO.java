@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -33,7 +32,7 @@ public class EventDTO {
     @NotNull(message = "The visibility of the event is required")
     private boolean visible;
 
-    @NotNull(message = "The recurrance of the event is required")
+    @NotNull(message = "The recurrence of the event is required")
     private boolean recurring;
 
     private boolean pending;
