@@ -1,10 +1,15 @@
 package com.example.syncmeet.service.impl;
 
 import com.example.syncmeet.dto.EventDTO;
+import com.example.syncmeet.dto.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
+import com.example.syncmeet.error.exception.UserEventMembershipException;
 import com.example.syncmeet.model.Event;
+import com.example.syncmeet.model.User;
 import com.example.syncmeet.repository.EventRepository;
+import com.example.syncmeet.repository.UserRepository;
 import com.example.syncmeet.service.EventService;
+import com.example.syncmeet.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,11 +23,17 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
 
+    private final UserService userService;
+
+    private final UserRepository userRepository;
+
     private final ModelMapper modelMapper;
 
     @Autowired
-    public EventServiceImpl(EventRepository eventRepository, ModelMapper modelMapper) {
+    public EventServiceImpl(EventRepository eventRepository, UserService userService, UserRepository userRepository, ModelMapper modelMapper) {
         this.eventRepository = eventRepository;
+        this.userService = userService;
+        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -52,6 +63,58 @@ public class EventServiceImpl implements EventService {
     public List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
         return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsTrue(start, end)
                 .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDTO> getPendingEventsByUserAndStartDateBetween(Long id, LocalDateTime start, LocalDateTime end) {
+        return eventRepository.findEventsByUserIdAndStartDateTimeBetweenAndPendingIsTrue(id, start, end)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDTO> getActiveEventsByUserAndStartDateBetween(Long id, LocalDateTime start, LocalDateTime end) {
+        return eventRepository.findEventsByUserIdAndStartDateTimeBetweenAndPendingIsFalse(id, start, end)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDTO> getPendingEventsByUser(Long id) {
+        return eventRepository.findByUserIdAndPendingTrue(id)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDTO> getActiveEventsByUser(Long id) {
+        return eventRepository.findByUserIdAndPendingFalse(id)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public void addUserToEvent(Long userId, Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() ->
+                new EntityNotFoundException("Event not found"));
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new EntityNotFoundException("User not found"));
+
+        if (event.getUsers().stream().anyMatch(u -> u.getId().equals(userId))) {
+            throw new UserEventMembershipException("User is already in this event");
+        }
+
+        event.getUsers().add(user);
+        user.getEvents().add(event);
+
+        eventRepository.save(event);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void removeUserFromEvent(Long userId, Long eventId) {
+        EventDTO event = getEventById(eventId);
+        if (event.getUsers().stream().noneMatch(u -> u.getId().equals(userId))) {
+            throw new UserEventMembershipException("User isn't part of this event");
+        }
+        event.getUsers().removeIf(user -> user.getId().equals(userId));
+        updateEvent(event, eventId);
     }
 
     @Override

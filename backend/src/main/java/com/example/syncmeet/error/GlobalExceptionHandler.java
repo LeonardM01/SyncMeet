@@ -1,6 +1,7 @@
 package com.example.syncmeet.error;
 
 import com.example.syncmeet.error.exception.EntityNotFoundException;
+import com.example.syncmeet.error.exception.UserEventMembershipException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +17,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityNotFoundException.class)
     public Map<String, Object> handleEntityNotFound(EntityNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UserEventMembershipException.class)
+    public Map<String, Object> handleUserEventMembership(EntityNotFoundException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         return response;

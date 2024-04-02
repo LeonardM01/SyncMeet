@@ -1,5 +1,6 @@
 package com.example.syncmeet.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -36,4 +38,6 @@ public class EventDTO {
     private boolean recurring;
 
     private boolean pending;
+
+    private Set<UserDTO> users;
 }

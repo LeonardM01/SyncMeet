@@ -18,6 +18,7 @@ public class EventController {
 
     private final EventService eventService;
 
+
     @Autowired
     public EventController(EventService eventService) {
         this.eventService = eventService;
@@ -47,9 +48,67 @@ public class EventController {
         return ResponseEntity.ok(eventService.getPendingEventsByStartDateBetween(startDate, endDate));
     }
 
+    @GetMapping("/api/event/pending/{id}")
+    public ResponseEntity<List<EventDTO>> getPendingEventsByUser(
+            @PathVariable Long id,
+            @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        List<EventDTO> events;
+
+        if (startDate != null && endDate != null) {
+            events = eventService.getPendingEventsByUserAndStartDateBetween(id, startDate, endDate);
+        }
+        else {
+            events = eventService.getPendingEventsByUser(id);
+        }
+
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/api/event/active/{id}")
+    public ResponseEntity<List<EventDTO>> getActiveEventsByUser(
+            @PathVariable Long id,
+            @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        List<EventDTO> events;
+
+        if (startDate != null && endDate != null) {
+            events = eventService.getActiveEventsByUserAndStartDateBetween(id, startDate, endDate);
+        }
+        else {
+            events = eventService.getActiveEventsByUser(id);
+        }
+
+        return ResponseEntity.ok(events);
+    }
+
     @GetMapping("/api/event/{id}")
     public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.getEventById(id));
+    }
+
+    @PutMapping("/api/event/{eventId}/user/{userId}/add")
+    public ResponseEntity<Map<String, Object>> addUserToEvent(
+            @PathVariable Long userId,
+            @PathVariable Long eventId
+    ) {
+        eventService.addUserToEvent(userId, eventId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "User added to event");
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/api/event/{eventId}/user/{userId}/remove")
+    public ResponseEntity<Map<String, Object>> removeUserFromEvent(
+            @PathVariable Long userId,
+            @PathVariable Long eventId
+    ) {
+        eventService.removeUserFromEvent(userId, eventId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "User removed from event");
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/api/event/name/{id}")

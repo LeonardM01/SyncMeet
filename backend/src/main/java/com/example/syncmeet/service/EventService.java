@@ -18,6 +18,18 @@ public interface EventService {
 
     List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end);
 
+    List<EventDTO> getPendingEventsByUserAndStartDateBetween(Long id, LocalDateTime start, LocalDateTime end);
+
+    List<EventDTO> getActiveEventsByUserAndStartDateBetween(Long id, LocalDateTime start, LocalDateTime end);
+
+    List<EventDTO> getPendingEventsByUser(Long id);
+
+    List<EventDTO> getActiveEventsByUser(Long id);
+
+    void addUserToEvent(Long userId, Long eventId);
+
+    void removeUserFromEvent(Long userId, Long eventId);
+
     void acceptEvent(Long id);
 
     EventDTO createEvent(EventDTO eventDTO);
