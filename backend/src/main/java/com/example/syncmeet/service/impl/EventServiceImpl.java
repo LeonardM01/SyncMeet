@@ -1,7 +1,6 @@
 package com.example.syncmeet.service.impl;
 
 import com.example.syncmeet.dto.EventDTO;
-import com.example.syncmeet.dto.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
 import com.example.syncmeet.error.exception.UserEventMembershipException;
 import com.example.syncmeet.model.Event;
@@ -9,7 +8,6 @@ import com.example.syncmeet.model.User;
 import com.example.syncmeet.repository.EventRepository;
 import com.example.syncmeet.repository.UserRepository;
 import com.example.syncmeet.service.EventService;
-import com.example.syncmeet.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,16 +21,13 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
 
-    private final UserService userService;
-
     private final UserRepository userRepository;
 
     private final ModelMapper modelMapper;
 
     @Autowired
-    public EventServiceImpl(EventRepository eventRepository, UserService userService, UserRepository userRepository, ModelMapper modelMapper) {
+    public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository, ModelMapper modelMapper) {
         this.eventRepository = eventRepository;
-        this.userService = userService;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
