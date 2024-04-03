@@ -3,7 +3,10 @@ package com.example.syncmeet.service.impl;
 import com.example.syncmeet.dto.FriendRequestDTO;
 import com.example.syncmeet.dto.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
+import com.example.syncmeet.error.exception.IdMismatchException;
+
 import com.example.syncmeet.model.FriendRequest;
+
 import com.example.syncmeet.model.User;
 import com.example.syncmeet.repository.FriendRequestRepository;
 import com.example.syncmeet.repository.UserRepository;
@@ -12,8 +15,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import java.util.Objects;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -115,6 +121,10 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UserDTO user, Long id) {
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User not found");
+        }
+
+        if (!Objects.equals(user.getId(), id)) {
+            throw new IdMismatchException("ID's don't match");
         }
 
         return createUser(user);

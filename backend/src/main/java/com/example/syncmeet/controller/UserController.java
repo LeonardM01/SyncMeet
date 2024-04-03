@@ -1,7 +1,10 @@
 package com.example.syncmeet.controller;
 
+import com.example.syncmeet.dto.ProfileImageURLChangeRequestDTO;
 import com.example.syncmeet.dto.FriendRequestDTO;
+
 import com.example.syncmeet.dto.UserDTO;
+import com.example.syncmeet.dto.UsernameChangeRequestDTO;
 import com.example.syncmeet.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +59,10 @@ public class UserController {
     @PutMapping("/api/users/username/{id}")
     public ResponseEntity<UserDTO> changeUsername(
             @PathVariable Long id,
-            @RequestBody String username
-    ) {
+            @Valid @RequestBody UsernameChangeRequestDTO usernameChangeRequest
+            ) {
         UserDTO user = userService.getUserById(id);
-        user.setUsername(username);
+        user.setUsername(usernameChangeRequest.getUsername());
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 
@@ -77,10 +80,10 @@ public class UserController {
     @PutMapping("/api/users/profileImage/{id}")
     public ResponseEntity<UserDTO> changeProfileImage(
             @PathVariable Long id,
-            @RequestBody String profileImageUrl
-    ) {
+            @Valid @RequestBody ProfileImageURLChangeRequestDTO profileImageURLChangeRequest
+            ) {
         UserDTO user = userService.getUserById(id);
-        user.setProfileImageUrl(profileImageUrl);
+        user.setProfileImageUrl(profileImageURLChangeRequest.getProfileImageUrl());
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 
