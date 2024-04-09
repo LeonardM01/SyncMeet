@@ -4,6 +4,10 @@ export default {
   content: ["./src/**/*.{html,js,jsx}"],
   theme: {
     extend: {
+      backgroundImage: {
+        background: "url('/src/backgrounds/background.svg')",
+        background2: "url('/src/backgrounds/background2.svg')",
+      },
       fontFamily: {
         nunito: ["Nunito", "sans-serif"],
       },

@@ -1,4 +1,3 @@
-import background2 from "@/backgrounds/background2.svg";
 import {Navbar} from "../components";
 
 const Home = () => {
@@ -6,27 +5,17 @@ const Home = () => {
         <>
             <Navbar/>
             <div
-                className={"h-screen bg-contain bg-right grid grid-rows-1 items-center ms-20"}
-                style={{
-                    backgroundImage: `url(${background2})`,
-                    backgroundRepeat: 'no-repeat',
-                }}>
+                className={"bg-background2 h-screen bg-contain bg-right bg-no-repeat grid grid-rows-1 items-center ms-20"}
+            >
                 <div>
-                    <div className={"heading1-bold leading-tight mb-6"}>
-                        Elevate Your
-                        <br/>
-                        Scheduling
-                        <br/>
-                        Experience
+                    <div className={"heading1-bold leading-tight mb-6 w-[627px] h-[234px]"}>
+                        Elevate Your Scheduling Experience
                     </div>
-                    <div className={"heading2 mb-12"}>
-                        Effortlessly track, share and harmonize
-                        <br/>
-                        events with friends!
+                    <div className={"heading2 mb-12 w-[627px] h-[74px]"}>
+                        Effortlessly track, share and harmonize events with friends!
                     </div>
                     <button
-                        className={"bg-orange heading4-bold rounded-lg"}
-                        style={{width: '309px', height: '51px'}}
+                        className={"bg-orange heading4-bold rounded-lg w-[309px] h-[51px]"}
                     >Start synchronizing now!
                     </button>
             </div>
