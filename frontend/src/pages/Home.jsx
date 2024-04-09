@@ -12,7 +12,7 @@ const Home = () => {
                     backgroundRepeat: 'no-repeat',
                 }}>
                 <div>
-                    <div className={"heading1 leading-tight mb-6"}>
+                    <div className={"heading1-bold leading-tight mb-6"}>
                         Elevate Your
                         <br/>
                         Scheduling
@@ -25,7 +25,7 @@ const Home = () => {
                         events with friends!
                     </div>
                     <button
-                        className={"bg-orange heading4 rounded-lg"}
+                        className={"bg-orange heading4-bold rounded-lg"}
                         style={{width: '309px', height: '51px'}}
                     >Start synchronizing now!
                     </button>
