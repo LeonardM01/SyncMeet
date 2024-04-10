@@ -5,13 +5,13 @@ const Home = () => {
         <>
             <Navbar/>
             <div
-                className={"bg-background2 h-screen bg-contain bg-right bg-no-repeat grid grid-rows-1 items-center ms-20"}
+                className={"bg-background2 h-screen bg-contain bg-right bg-no-repeat grid grid-rows-1 items-center ms-[119px]"}
             >
                 <div>
-                    <div className={"heading1-bold leading-tight mb-6 w-[627px] h-[234px]"}>
+                    <div className={"heading1-bold leading-tight mb-[32px] w-[627px] h-[234px]"}>
                         Elevate Your Scheduling Experience
                     </div>
-                    <div className={"heading2 mb-12 w-[627px] h-[74px]"}>
+                    <div className={"heading2 mb-[64px] w-[627px] h-[74px]"}>
                         Effortlessly track, share and harmonize events with friends!
                     </div>
                     <button
