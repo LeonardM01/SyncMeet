@@ -4,7 +4,7 @@ const Navbar = () => {
   const { loginWithRedirect } = useAuth0();
 
   return (
-    <nav className="flex items-center justify-between w-full bg-black-400 lg:px-32 md:px-16 sm:px-12 pt-3">
+    <nav className="flex-between w-full bg-black-400 lg:px-32 md:px-16 sm:px-12 pt-3">
       <img
         src="/assets/general/icons/logo.svg"
         width={115}
@@ -17,7 +17,7 @@ const Navbar = () => {
         <a href="/membership">Membership</a>
         <a href="/Blog">Blog</a>
         <button
-          className="button-bold border border-orange rounded-lg px-4 py-2.5 whitespace-nowrap"
+          className="button-bold border border-orange rounded-lg px-5 py-2.5 line-clamp"
           onClick={() => loginWithRedirect()}
         >
           Sign Up

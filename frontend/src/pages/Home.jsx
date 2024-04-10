@@ -4,24 +4,21 @@ import heroImage from "/SyncMeet/frontend/public/assets/general/backgrounds/hero
 
 const Home = () => {
 
-  const backgroundImageStyle = {
-    backgroundImage: `url(${heroImage}), url(${backgroundImage})`,
-    backgroundSize: '948.72px 1031.89px, cover',
-    backgroundPosition: 'bottom right, center',
-    backgroundRepeat: 'no-repeat',
-    height: '100vh',
-    overflowX: 'hidden',
-  };
-
   const buttonStyle = {
     width: '309px',
     height: '51px',
     fontSize: '18px'
   };
 
-
   return (
-    <div style={backgroundImageStyle} className="md:px-8 lg:px-32 sm:px-0">
+    <div
+      className={"bg-bottom-right bg-right bg-no-repeat h-screen overflow-x-hidden md:px-8 lg:px-32 sm:px-0"}
+      style={{
+          backgroundImage: `url(${heroImage}), url(${backgroundImage})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '948.72px 1031.89px, cover',
+      }}
+    >
       <Navbar />
       <div className="my-56 lg:mx-32 md:mx-16 sm:mx-10"> 
         <section className="heading1 max-w-xl my-6">
