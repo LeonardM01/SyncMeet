@@ -8,6 +8,7 @@ on:
 env:
   working-directory: ./
   ecr-repository: 471112874945.dkr.ecr.eu-central-1.amazonaws.com/syncmeet
+  AWS_REGION: eu-central-1
 
 jobs:
   build-and-push:
