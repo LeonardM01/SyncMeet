@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Auth0Provider } from "@auth0/auth0-react";
 
-// import { Navbar } from "../components";
 import { Home, Dashboard } from "../pages";
 import { Auth, DefaultLayout } from "../layouts";
 

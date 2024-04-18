@@ -1,41 +1,34 @@
-import { Navbar } from "../components";
+import { MobileNavbar, Navbar } from "@/components";
+import { Button } from "@/components/ui/Button";
 
 const Home = () => {
   return (
-    <div
-      className={
-        "bg-bottom-right bg-right bg-no-repeat h-screen overflow-x-hidden md:px-8 lg:px-32 sm:px-0"
-      }
-      style={{
-        backgroundImage: `url(' '), url('/assets/general/backgrounds/homepage.svg)`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "948.72px 1031.89px, cover",
-      }}
-    >
+    <div className="h-screen overflow-hidden bg-[url('/assets/home/images/background.webp')] bg-cover bg-no-repeat">
       <Navbar />
+      <MobileNavbar />
 
-      <section className="min-w-screen relawtive">
-        <div className="my-56 lg:mx-32 md:mx-16 sm:mx-10">
-          <img
-            src="/assets/general/backgrounds/hero.svg"
-            className="absolute right-0i"
-            alt="an image depicting a calendar"
-          />
+      <section className="min-w-screen relative">
+        <img
+          src="/assets/home/images/calendars.webp"
+          className="absolute right-0 top-0 max-xl:hidden"
+          alt="an image depicting a calendar"
+        />
 
-          <h1 className="heading1 max-w-xl my-6">
+        <div className="md:pt-44 pt-16 lg:px-32 md:px-16 px-6 w-full h-full">
+          <h1 className="heading1 max-w-xl mb-8">
             Elevate Your Scheduling Experience
           </h1>
 
-          <h2 className="heading2 max-w-xl my-6">
+          <h2 className="heading2 max-w-xl mb-16">
             Effortlessly track, share and harmonize events with friends!
           </h2>
 
-          <a
+          <Button
             href="/membership"
-            className="heading4-bold bg-orange rounded-lg px-7 py-4 my-6 max-w-[309px]"
+            className="heading4-bold bg-orange rounded-lg px-10 py-4 h-fit w-full md:max-w-[310px]"
           >
             Start synchronizing now!
-          </a>
+          </Button>
         </div>
       </section>
     </div>
