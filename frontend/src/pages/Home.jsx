@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/Button";
 
 const Home = () => {
   return (
-    <div className="h-screen overflow-x-hidden sm:overflow-y-hidden bg-[url('/assets/home/images/background.webp')] bg-cover bg-no-repeat">
+    <div className="h-screen overflow-x-hidden bg-[url('/assets/home/images/background.webp')] bg-cover bg-no-repeat">
       <Navbar />
       <MobileNavbar />
 
@@ -14,7 +14,7 @@ const Home = () => {
           alt="an image depicting a calendar"
         />
 
-        <div className="md:pt-44 pt-16 lg:px-32 md:px-16 px-6 w-full h-full">
+        <div className="md:pt-44 py-16 lg:px-32 md:px-16 px-6 w-full h-full">
           <h1 className="heading1 max-w-xl mb-8">
             Elevate Your Scheduling Experience
           </h1>
