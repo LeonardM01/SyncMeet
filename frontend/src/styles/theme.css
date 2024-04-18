@@ -1,0 +1,51 @@
+@tailwind utilities;
+
+@layer utilities {
+    .heading1 {
+        @apply text-[65px] font-normal leading-[120%];
+    }
+
+    .heading2 {
+        @apply text-[31px] font-normal leading-[120%];
+    }
+
+    .heading3 {
+        @apply text-[24px] font-normal leading-[120%];
+    }
+
+    .heading4 {
+        @apply text-[20px] font-normal leading-[120%];
+    }
+
+    .heading4-bold {
+        @apply text-[20px] font-bold leading-[120%];
+    }
+
+    .button {
+        @apply text-[16px] font-normal leading-[120%];
+    }
+
+    .button-bold {
+        @apply text-[16px] font-bold leading-[120%];
+    }
+
+    .paragraph {
+        @apply text-[13px] font-normal leading-[120%];
+    }
+
+    .paragraph-bold {
+        @apply text-[13px] font-bold leading-[120%];
+    }
+
+    .body {
+        @apply text-[10px] font-normal leading-[120%];
+    }
+
+    .body-bold {
+        @apply text-[10px] font-bold leading-[120%];
+    }
+
+    .small {
+        @apply text-[8px] font-normal leading-[120%];
+    }
+}
