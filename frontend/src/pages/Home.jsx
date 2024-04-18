@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/Button";
 
 const Home = () => {
   return (
-    <div className="h-screen overflow-hidden bg-[url('/assets/home/images/background.webp')] bg-cover bg-no-repeat">
+    <div className="h-screen overflow-x-hidden sm:overflow-y-hidden bg-[url('/assets/home/images/background.webp')] bg-cover bg-no-repeat">
       <Navbar />
       <MobileNavbar />
 
