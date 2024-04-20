@@ -51,7 +51,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
-          
+
       - name: Login to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -62,4 +62,4 @@ jobs:
         run: docker rm -f syncmeet
 
       - name: Run docker container
-        run: docker run --env-file env.list -d -p 443:8080 --restart on-failure --name syncmeet 471112874945.dkr.ecr.eu-central-1.amazonaws.com/syncmeet:latest
+        run: docker run --env-file ~/env.list -d -p 443:8080 --restart on-failure --name syncmeet 471112874945.dkr.ecr.eu-central-1.amazonaws.com/syncmeet:latest
