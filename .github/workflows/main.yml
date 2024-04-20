@@ -8,6 +8,7 @@ on:
 env:
   working-directory: ./backend
   ecr-repository: 471112874945.dkr.ecr.eu-central-1.amazonaws.com/syncmeet
+  aws-region: eu-central-1
 
 jobs:
   build-and-push:
@@ -46,6 +47,8 @@ jobs:
     steps:
       - name: Login to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: eu-central-1
 
       - name: Pull Image from AWS ECR
         run: docker pull 471112874945.dkr.ecr.eu-central-1.amazonaws.com/syncmeet:latest
