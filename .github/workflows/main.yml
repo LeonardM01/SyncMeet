@@ -31,7 +31,7 @@ jobs:
 
       - name: Build and Push Docker image to Amazon ECR
         run: |
-          ECR_REGISTRY=471112874945.dkr.ecr.eu-central-1.amazonaws.com/
+          ECR_REGISTRY=471112874945.dkr.ecr.eu-central-1.amazonaws.com
           ECR_REPOSITORY=syncmeet
           IMAGE_TAG=latest
           
