@@ -20,11 +20,11 @@ jobs:
           ls 
       - name: Install Dependencies
         run: |
-          ls
+          cd ./frontend
           npm install
       - name: Build
         run: |
-         ls
+         cd ./frontend
          npm run dist
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
