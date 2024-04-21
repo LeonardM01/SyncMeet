@@ -1,13 +1,20 @@
 {
   "name": "syncmeet",
+  "description": "Event tracking app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "main": "main.js",
+  "author": "Syncmeet team",
+  "ignore-scripts": false,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "electron": "electron .",
+    "electron:start": "npm run dev && npm run electron",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dist": "electron-builder"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
@@ -28,6 +35,8 @@
     "@types/react-dom": "^18.2.21",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.18",
+    "electron": "^30.0.1",
+    "electron-builder": "^24.13.3",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -36,5 +45,25 @@
     "postcss": "^8.4.36",
     "tailwindcss": "^3.4.1",
     "vite": "^5.1.6"
+  },
+  "build": {
+    "appId": "com.riteh.syncmeet",
+    "productName": "Syncmeet",
+    "win": {
+      "target": "nsis",
+      "icon": "public/android-chrome-512x512.png"
+    },
+    "files": [
+      "**/*",
+      "!**/*.ts",
+      "!*.code-workspace",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   }
 }
