@@ -19,7 +19,9 @@ jobs:
           cd ./frontend
           ls 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm install
+          ls
       - name: Build
         run: |
          ls
