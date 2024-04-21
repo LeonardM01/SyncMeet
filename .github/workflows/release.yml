@@ -14,8 +14,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - name: List directory contents
-        run: ls
+      - name: Change directory
+        run:  |
+          cd ./frontend
+          ls 
       - name: Install Dependencies
         run: npm install
       - name: Build
