@@ -62,4 +62,4 @@ jobs:
         run: docker rm -f syncmeet
 
       - name: Run docker container
-        run: docker run --env-file ~/env.list -d -p 443:8080 --restart on-failure --name syncmeet 471112874945.dkr.ecr.eu-central-1.amazonaws.com/syncmeet:latest
+        run: docker run --env-file ~/env.list -d -p 80:8080 --restart on-failure --name syncmeet 471112874945.dkr.ecr.eu-central-1.amazonaws.com/syncmeet:latest
