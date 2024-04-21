@@ -1,7 +1,12 @@
-import { MobileNavbar, Navbar } from "@/components";
+import { MobileNavbar, Navbar, PageLoader } from "@/components";
 import { Button } from "@/components/ui/Button";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Home = () => {
+  const { loginWithRedirect, user, isLoading } = useAuth0();
+
+  if (isLoading) return <PageLoader />;
+
   return (
     <div className="h-screen overflow-x-hidden bg-[url('/assets/home/images/background.webp')] bg-cover bg-no-repeat">
       <Navbar />
@@ -23,12 +28,21 @@ const Home = () => {
             Effortlessly track, share and harmonize events with friends!
           </h2>
 
-          <Button
-            href="/membership"
-            className="heading4-bold bg-orange rounded-lg px-10 py-4 h-fit w-full md:max-w-[310px]"
-          >
-            Start synchronizing now!
-          </Button>
+          {user ? (
+            <a
+              href="/dashboard"
+              className="heading4-bold bg-orange rounded-lg px-10 py-4 h-fit w-full md:max-w-[310px]"
+            >
+              Start synchronizing now!
+            </a>
+          ) : (
+            <Button
+              onClick={() => loginWithRedirect()}
+              className="heading4-bold bg-orange rounded-lg px-10 py-4 h-fit w-full md:max-w-[310px]"
+            >
+              Start synchronizing now!
+            </Button>
+          )}
         </div>
       </section>
     </div>
