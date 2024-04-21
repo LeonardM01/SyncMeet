@@ -20,8 +20,8 @@ jobs:
           ls 
       - name: Install Dependencies
         run: |
-          npm install
           ls
+          npm install
       - name: Build
         run: |
          ls
