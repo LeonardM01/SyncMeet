@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: '18'
       - name: List directory contents
-        run: ls -la
+        run: ls
       - name: Install Dependencies
         run: npm install
       - name: Build
