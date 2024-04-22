@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Auth0Provider } from "@auth0/auth0-react";
 
-import { Home, Dashboard, Membership } from "../pages";
-import { Auth, DefaultLayout } from "../layouts";
+import { Home, Dashboard, Membership } from "@/pages";
+import { Auth, DefaultLayout } from "@/layouts";
 
 const App = () => {
   return (
@@ -17,6 +17,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/membership" element={<Membership />} />
             <Route
               path="/dashboard"
               element={
@@ -25,7 +26,6 @@ const App = () => {
                 </Auth>
               }
             />
-            <Route path="/membership" element={<Membership />} />
           </Routes>
         </BrowserRouter>
       </DefaultLayout>
