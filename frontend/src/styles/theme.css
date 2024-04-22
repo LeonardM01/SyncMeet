@@ -5,6 +5,10 @@
         @apply text-[65px] font-normal leading-[120%];
     }
 
+    .heading1-bold {
+        @apply text-[65px] font-bold leading-[120%];
+    }
+
     .heading2 {
         @apply text-[31px] font-normal leading-[120%];
     }

@@ -34,7 +34,6 @@ const MobileNavbar = () => {
           side="top"
           className="!bg-dark-400 !gap-y-6 flex-col heading4 pt-10 flex border-0 text-white"
         >
-          <a href="/docs">Docs</a>
           <a href="/membership">Membership</a>
           <a href="/Blog">Blog</a>
           <button

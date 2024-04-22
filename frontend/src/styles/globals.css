@@ -16,4 +16,8 @@
     .flex-center {
         @apply flex justify-center items-center;
     }
+
+    .bg-orange-gradient {
+        @apply bg-gradient-to-t from-[#e28413] to-[#FBF3F1];
+    }
 }

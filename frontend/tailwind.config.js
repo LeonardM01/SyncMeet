@@ -12,7 +12,7 @@ export default {
         light: "#fbf5f3",
         "dark-100": "#010112",
         "dark-300": "#000022",
-        "light-400": "#fbf3f1",
+        "light-400": "#FBF3F1",
         "dark-400": "#1c1c21",
       },
     },
