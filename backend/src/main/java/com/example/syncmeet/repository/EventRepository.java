@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, UUID> {
 
     @Query("SELECT e FROM Event e WHERE e.startDateTime BETWEEN :startDate AND :endDate AND e.pending = false")
     List<Event> findEventsByStartDateTimeBetweenAndPendingIsFalse(LocalDateTime startDate, LocalDateTime endDate);
@@ -18,14 +19,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findEventsByStartDateTimeBetweenAndPendingIsTrue(LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("SELECT e FROM Event e JOIN e.users u WHERE u.id = :userId AND e.pending = false ")
-    List<Event> findByUserIdAndPendingFalse(Long userId);
+    List<Event> findByUserIdAndPendingFalse(UUID userId);
 
     @Query("SELECT e FROM Event e JOIN e.users u WHERE u.id = :userId AND e.pending = true")
-    List<Event> findByUserIdAndPendingTrue(Long userId);
+    List<Event> findByUserIdAndPendingTrue(UUID userId);
 
     @Query("SELECT e FROM Event e JOIN e.users u WHERE u.id = :userId AND e.startDateTime BETWEEN :startDate AND :endDate AND e.pending = true")
-    List<Event> findEventsByUserIdAndStartDateTimeBetweenAndPendingIsTrue(Long userId,LocalDateTime startDate, LocalDateTime endDate);
+    List<Event> findEventsByUserIdAndStartDateTimeBetweenAndPendingIsTrue(UUID userId,LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("SELECT e FROM Event e JOIN e.users u WHERE u.id = :userId AND e.startDateTime BETWEEN :startDate AND :endDate AND e.pending = false")
-    List<Event> findEventsByUserIdAndStartDateTimeBetweenAndPendingIsFalse(Long userId,LocalDateTime startDate, LocalDateTime endDate);
+    List<Event> findEventsByUserIdAndStartDateTimeBetweenAndPendingIsFalse(UUID userId,LocalDateTime startDate, LocalDateTime endDate);
 }

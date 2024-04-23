@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 public class UserController {
@@ -36,14 +37,14 @@ public class UserController {
     }
 
     @GetMapping("/api/users/friends/{id}")
-    public ResponseEntity<List<UserDTO>> getFriends(@PathVariable Long id) {
+    public ResponseEntity<List<UserDTO>> getFriends(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getAllFriends(id));
     }
 
     @PostMapping("/api/users/{userId}/friends/{friendId}")
     public ResponseEntity<FriendRequestDTO> sendFriendRequest(
-            @PathVariable Long userId,
-            @PathVariable Long friendId
+            @PathVariable UUID userId,
+            @PathVariable UUID friendId
     ) {
         return ResponseEntity.ok(userService.createFriendRequest(userId, friendId));
     }
@@ -58,7 +59,7 @@ public class UserController {
 
     @PutMapping("/api/users/username/{id}")
     public ResponseEntity<UserDTO> changeUsername(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody UsernameChangeRequestDTO usernameChangeRequest
             ) {
         UserDTO user = userService.getUserById(id);
@@ -68,8 +69,8 @@ public class UserController {
 
     @PutMapping("/api/users/{userId}/friends/{friendId}")
     public ResponseEntity<Map<String, Object>> acceptFriendRequest(
-            @PathVariable Long userId,
-            @PathVariable Long friendId
+            @PathVariable UUID userId,
+            @PathVariable UUID friendId
     ) {
         userService.acceptFriendRequest(userId, friendId);
         Map<String, Object> response = new HashMap<>();
@@ -79,7 +80,7 @@ public class UserController {
 
     @PutMapping("/api/users/profileImage/{id}")
     public ResponseEntity<UserDTO> changeProfileImage(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody ProfileImageURLChangeRequestDTO profileImageURLChangeRequest
             ) {
         UserDTO user = userService.getUserById(id);
@@ -89,8 +90,8 @@ public class UserController {
 
     @DeleteMapping("/api/users/{userId}/friends/{friendId}")
     public ResponseEntity<Map<String, Object>> rejectFriendRequest(
-            @PathVariable Long userId,
-            @PathVariable Long friendId
+            @PathVariable UUID userId,
+            @PathVariable UUID friendId
     ) {
         FriendRequestDTO friendRequest = userService.getFriendRequestByUserIdAndFriendId(userId, friendId);
 
@@ -103,7 +104,7 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/{id}")
-    public ResponseEntity<Map<String, Object>> removeUser(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> removeUser(@PathVariable UUID id) {
         userService.deleteUser(id);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "User deleted successfully");

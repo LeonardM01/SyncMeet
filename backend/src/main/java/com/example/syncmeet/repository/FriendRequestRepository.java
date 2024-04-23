@@ -8,11 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
+public interface FriendRequestRepository extends JpaRepository<FriendRequest, UUID> {
     @Query("SELECT CASE WHEN fr.user.id = :userId THEN fr.friend ELSE fr.user END FROM FriendRequest fr WHERE fr.user.id = :userId OR fr.friend.id = :userId")
-    List<FriendRequest> findByUserIdAndPendingRequestFalse(@Param("userId") Long userId);
+    List<FriendRequest> findByUserIdAndPendingRequestFalse(@Param("userId") UUID userId);
 
-    Optional<FriendRequest> findByUserIdAndFriendId(Long userId, Long friendId);
+    Optional<FriendRequest> findByUserIdAndFriendId(UUID userId, UUID friendId);
 }

@@ -7,12 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
 
-    private Long id;
+    private UUID id;
 
     @NotNull(message = "Username is required")
     @Size(min = 3, message = "Username is too short")

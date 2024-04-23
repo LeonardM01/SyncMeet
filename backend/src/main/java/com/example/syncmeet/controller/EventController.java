@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 public class EventController {
@@ -50,7 +51,7 @@ public class EventController {
 
     @GetMapping("/api/event/pending/{id}")
     public ResponseEntity<List<EventDTO>> getPendingEventsByUser(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
@@ -68,7 +69,7 @@ public class EventController {
 
     @GetMapping("/api/event/active/{id}")
     public ResponseEntity<List<EventDTO>> getActiveEventsByUser(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
@@ -85,14 +86,14 @@ public class EventController {
     }
 
     @GetMapping("/api/event/{id}")
-    public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
+    public ResponseEntity<EventDTO> getEventById(@PathVariable UUID id) {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
     @PutMapping("/api/event/{eventId}/user/{userId}/add")
     public ResponseEntity<Map<String, Object>> addUserToEvent(
-            @PathVariable Long userId,
-            @PathVariable Long eventId
+            @PathVariable UUID userId,
+            @PathVariable UUID eventId
     ) {
         eventService.addUserToEvent(userId, eventId);
         Map<String, Object> response = new HashMap<>();
@@ -102,8 +103,8 @@ public class EventController {
 
     @PutMapping("/api/event/{eventId}/user/{userId}/remove")
     public ResponseEntity<Map<String, Object>> removeUserFromEvent(
-            @PathVariable Long userId,
-            @PathVariable Long eventId
+            @PathVariable UUID userId,
+            @PathVariable UUID eventId
     ) {
         eventService.removeUserFromEvent(userId, eventId);
         Map<String, Object> response = new HashMap<>();
@@ -113,7 +114,7 @@ public class EventController {
 
     @PutMapping("/api/event/name/{id}")
     public ResponseEntity<EventDTO> updateName(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody EventNameUpdateRequestDTO eventNameUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
@@ -123,7 +124,7 @@ public class EventController {
 
     @PutMapping("/api/event/description/{id}")
     public ResponseEntity<EventDTO> updateDescription(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody EventDescriptionUpdateRequestDTO eventDescriptionUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
@@ -133,7 +134,7 @@ public class EventController {
 
     @PutMapping("/api/event/color/{id}")
     public ResponseEntity<EventDTO> updateColor(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody EventColorUpdateRequestDTO eventColorUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
@@ -143,7 +144,7 @@ public class EventController {
 
     @PutMapping("/api/event/visible/{id}")
     public ResponseEntity<EventDTO> updateVisibility(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody EventVisibleUpdateRequestDTO eventVisibleUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
@@ -153,7 +154,7 @@ public class EventController {
 
     @PutMapping("/api/event/recurring/{id}")
     public ResponseEntity<EventDTO> updateRecurrence(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody EventRecurringUpdateRequestDTO eventRecurringUpdateRequest
     ) {
         EventDTO event = eventService.getEventById(id);
@@ -162,7 +163,7 @@ public class EventController {
     }
 
     @PutMapping("/api/event/accept/{id}")
-    public ResponseEntity<Map<String, Object>> acceptEvent(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> acceptEvent(@PathVariable UUID id) {
         eventService.acceptEvent(id);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Event accepted");
@@ -170,7 +171,7 @@ public class EventController {
     }
 
     @DeleteMapping("/api/event/{id}")
-    public ResponseEntity<Map<String, Object>> rejectEvent(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> rejectEvent(@PathVariable UUID id) {
         EventDTO event = eventService.getEventById(id);
         Map<String, Object> response = new HashMap<>();
         if (event.isPending()) {

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -56,14 +57,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public FriendRequestDTO getFriendRequestByUserIdAndFriendId(Long userId, Long friendId) {
+    public FriendRequestDTO getFriendRequestByUserIdAndFriendId(UUID userId, UUID friendId) {
         return friendRequestRepository.findByUserIdAndFriendId(userId, friendId)
                 .map(this::friendRequestToDTO).orElseThrow(() ->
                         new EntityNotFoundException("Friend request not found"));
     }
 
     @Override
-    public FriendRequestDTO createFriendRequest(Long userId, Long friendId) {
+    public FriendRequestDTO createFriendRequest(UUID userId, UUID friendId) {
         UserDTO user = getUserById(userId);
         UserDTO friend = getUserById(friendId);
 
@@ -76,14 +77,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void acceptFriendRequest(Long userId, Long friendId) {
+    public void acceptFriendRequest(UUID userId, UUID friendId) {
         FriendRequestDTO friendRequest = getFriendRequestByUserIdAndFriendId(userId, friendId);
         friendRequest.setPendingRequest(false);
         friendRequestRepository.save(friendRequestDTOToEntity(friendRequest));
     }
 
     @Override
-    public void rejectFriendRequest(Long userId, Long friendId) {
+    public void rejectFriendRequest(UUID userId, UUID friendId) {
         FriendRequestDTO friendRequest = getFriendRequestByUserIdAndFriendId(userId, friendId);
         friendRequestRepository.delete(friendRequestDTOToEntity(friendRequest));
     }
@@ -100,13 +101,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserById(Long id) {
+    public UserDTO getUserById(UUID id) {
         return userRepository.findById(id).map(this::userToDTO).orElseThrow(() ->
                 new EntityNotFoundException("User not found"));
     }
 
     @Override
-    public List<UserDTO> getAllFriends(Long id) {
+    public List<UserDTO> getAllFriends(UUID id) {
         List<FriendRequestDTO> friendRequests = friendRequestRepository.findByUserIdAndPendingRequestFalse(id)
                 .stream().map(this::friendRequestToDTO).toList();
         return friendRequests.stream().map(FriendRequestDTO::getFriend).collect(Collectors.toList());
@@ -118,7 +119,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO user, Long id) {
+    public UserDTO updateUser(UserDTO user, UUID id) {
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User not found");
         }
@@ -131,7 +132,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User not found");
         }
