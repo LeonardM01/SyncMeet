@@ -6,6 +6,7 @@ import com.example.syncmeet.model.FriendRequest;
 import com.example.syncmeet.model.User;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
     UserDTO userToDTO(User user);
@@ -16,25 +17,25 @@ public interface UserService {
 
     FriendRequest friendRequestDTOToEntity(FriendRequestDTO friendRequestDTO);
 
-    FriendRequestDTO getFriendRequestByUserIdAndFriendId(Long userId, Long friendId);
+    FriendRequestDTO getFriendRequestByUserIdAndFriendId(UUID userId, UUID friendId);
 
-    FriendRequestDTO createFriendRequest(Long userId, Long friendId);
+    FriendRequestDTO createFriendRequest(UUID userId, UUID friendId);
 
-    void acceptFriendRequest(Long userId, Long friendId);
+    void acceptFriendRequest(UUID userId, UUID friendId);
 
-    void rejectFriendRequest(Long userId, Long friendId);
+    void rejectFriendRequest(UUID userId, UUID friendId);
 
     List<UserDTO> getAllUsers();
 
     UserDTO getUserByEmail(String email);
 
-    UserDTO getUserById(Long id);
+    UserDTO getUserById(UUID id);
 
-    List<UserDTO> getAllFriends(Long id);
+    List<UserDTO> getAllFriends(UUID id);
 
     UserDTO createUser(UserDTO userDTO);
 
-    UserDTO updateUser(UserDTO user, Long id);
+    UserDTO updateUser(UserDTO user, UUID id);
 
-    void deleteUser(Long id);
+    void deleteUser(UUID id);
 }

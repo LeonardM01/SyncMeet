@@ -5,6 +5,7 @@ import com.example.syncmeet.model.Event;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public interface EventService {
 
@@ -12,29 +13,29 @@ public interface EventService {
 
     Event toEntity(EventDTO eventDTO);
 
-    EventDTO getEventById(Long id);
+    EventDTO getEventById(UUID id);
 
     List<EventDTO> getActiveEventsByStartDateBetween(LocalDateTime start, LocalDateTime end);
 
     List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end);
 
-    List<EventDTO> getPendingEventsByUserAndStartDateBetween(Long id, LocalDateTime start, LocalDateTime end);
+    List<EventDTO> getPendingEventsByUserAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end);
 
-    List<EventDTO> getActiveEventsByUserAndStartDateBetween(Long id, LocalDateTime start, LocalDateTime end);
+    List<EventDTO> getActiveEventsByUserAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end);
 
-    List<EventDTO> getPendingEventsByUser(Long id);
+    List<EventDTO> getPendingEventsByUser(UUID id);
 
-    List<EventDTO> getActiveEventsByUser(Long id);
+    List<EventDTO> getActiveEventsByUser(UUID id);
 
-    void addUserToEvent(Long userId, Long eventId);
+    void addUserToEvent(UUID userId, UUID eventId);
 
-    void removeUserFromEvent(Long userId, Long eventId);
+    void removeUserFromEvent(UUID userId, UUID eventId);
 
-    void acceptEvent(Long id);
+    void acceptEvent(UUID id);
 
     EventDTO createEvent(EventDTO eventDTO);
 
-    EventDTO updateEvent(EventDTO eventDTO, Long id);
+    EventDTO updateEvent(EventDTO eventDTO, UUID id);
 
-    void deleteEvent(Long id);
+    void deleteEvent(UUID id);
 }

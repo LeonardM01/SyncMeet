@@ -8,13 +8,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventDTO {
 
-    private Long id;
+    private UUID id;
 
     @NotNull(message = "Start date for event is required")
     private LocalDateTime startDateTime;

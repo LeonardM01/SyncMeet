@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +44,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDTO getEventById(Long id) {
+    public EventDTO getEventById(UUID id) {
         return eventRepository.findById(id).map(this::toDTO).
                 orElseThrow(() -> new EntityNotFoundException("Couldn't find event."));
     }
@@ -61,31 +62,31 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventDTO> getPendingEventsByUserAndStartDateBetween(Long id, LocalDateTime start, LocalDateTime end) {
+    public List<EventDTO> getPendingEventsByUserAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end) {
         return eventRepository.findEventsByUserIdAndStartDateTimeBetweenAndPendingIsTrue(id, start, end)
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public List<EventDTO> getActiveEventsByUserAndStartDateBetween(Long id, LocalDateTime start, LocalDateTime end) {
+    public List<EventDTO> getActiveEventsByUserAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end) {
         return eventRepository.findEventsByUserIdAndStartDateTimeBetweenAndPendingIsFalse(id, start, end)
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public List<EventDTO> getPendingEventsByUser(Long id) {
+    public List<EventDTO> getPendingEventsByUser(UUID id) {
         return eventRepository.findByUserIdAndPendingTrue(id)
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public List<EventDTO> getActiveEventsByUser(Long id) {
+    public List<EventDTO> getActiveEventsByUser(UUID id) {
         return eventRepository.findByUserIdAndPendingFalse(id)
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public void addUserToEvent(Long userId, Long eventId) {
+    public void addUserToEvent(UUID userId, UUID eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new EntityNotFoundException("Event not found"));
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -103,7 +104,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void removeUserFromEvent(Long userId, Long eventId) {
+    public void removeUserFromEvent(UUID userId, UUID eventId) {
         EventDTO event = getEventById(eventId);
         if (event.getUsers().stream().noneMatch(u -> u.getId().equals(userId))) {
             throw new UserEventMembershipException("User isn't part of this event");
@@ -113,7 +114,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void acceptEvent(Long id) {
+    public void acceptEvent(UUID id) {
         EventDTO event = getEventById(id);
         event.setPending(false);
         eventRepository.save(toEntity(event));
@@ -125,7 +126,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDTO updateEvent(EventDTO event, Long id) {
+    public EventDTO updateEvent(EventDTO event, UUID id) {
         if (!eventRepository.existsById(id)) {
             throw new EntityNotFoundException("Event not found");
         }
@@ -134,7 +135,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void deleteEvent(Long id) {
+    public void deleteEvent(UUID id) {
         if (!eventRepository.existsById(id)) {
             throw new EntityNotFoundException("Event not found");
         }
