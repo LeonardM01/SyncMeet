@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "event")
@@ -14,13 +15,8 @@ import java.util.Set;
 public class Event {
 
     @Id
-    @SequenceGenerator(
-            name = "event_generator",
-            sequenceName = "event_seq",
-            allocationSize = 1
-    )
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_generator")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
