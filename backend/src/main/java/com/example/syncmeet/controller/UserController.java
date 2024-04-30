@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * REST controller for managing {@link com.example.syncmeet.model.User} and {@link com.example.syncmeet.model.FriendRequest}
+ */
 @RestController
 public class UserController {
 
@@ -23,21 +26,48 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * {@code GET /api/users} : Fetch all users
+     *
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all users as {@link UserDTO}s
+     * in the body
+     */
     @GetMapping("/api/users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    /**
+     * {@code GET /api/users/{email}} : Fetch user by email
+     *
+     * @param email Email of wanted user
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the user as {@link UserDTO},
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
     @GetMapping("/api/users/{email}")
     public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
+    /**
+     * @param id ID of the specified user
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with all friends of the user as {@link UserDTO},
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
     @GetMapping("/api/users/friends/{id}")
     public ResponseEntity<List<UserDTO>> getFriends(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getAllFriends(id));
     }
 
+    /**
+     * {@code POST /api/users/{userId}/friends/{friendId}} : Send friend request
+     *
+     * @param userId ID of user that sends the friend request
+     * @param friendId ID of user to whom the friend request is being sent
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the friend request as {@link FriendRequestDTO}
+     * in the body, or with status {@code 404 (Not Found)} if either user does not exist, or with status {@code 400 (Bad request)}
+     * if friend request already exists
+     */
     @PostMapping("/api/users/{userId}/friends/{friendId}")
     public ResponseEntity<FriendRequestDTO> sendFriendRequest(
             @PathVariable UUID userId,
@@ -46,6 +76,13 @@ public class UserController {
         return ResponseEntity.ok(userService.createFriendRequest(userId, friendId));
     }
 
+    /**
+     * {@code POST /api/users} : Sign up
+     *
+     * @param userSignUpRequest Sign up request with necessary credentials as {@link UserSignUpRequestDTO}
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and a confirmation message in the body,
+     * or with status {@code 400 (Bad Request)} if the request is invalid
+     */
     @PostMapping("/api/users")
     public ResponseEntity<Map<String, Object>> signUp(@Valid @RequestBody UserSignUpRequestDTO userSignUpRequest) {
         UserDTO user = new UserDTO(
@@ -61,6 +98,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * {@code PUT /api/users/username/{id}} : Change username
+     *
+     * @param id ID of specified user
+     * @param usernameChangeRequest Request with new username as {@link UsernameChangeRequestDTO}
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and updated user as {@link UserDTO} in the body,
+     * or with status {@code 404 (Not found)} if the user does not exist,
+     * or with status {@code 400 (Bad request)} if the request is invalid
+     */
     @PutMapping("/api/users/username/{id}")
     public ResponseEntity<UserDTO> changeUsername(
             @PathVariable UUID id,
@@ -71,6 +117,14 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 
+    /**
+     * {@code PUT /api/users/{userId}/friend/{friendId}} : Accept friend request
+     *
+     * @param userId ID of the user that sent the friend request
+     * @param friendId ID of the user to whom the friend request was sent to
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and confirmation message in the body,
+     * or with status {@code 404 (Not found)} if the friend request does not exist
+     */
     @PutMapping("/api/users/{userId}/friends/{friendId}")
     public ResponseEntity<Map<String, Object>> acceptFriendRequest(
             @PathVariable UUID userId,
@@ -82,6 +136,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * {@code PUT /api/users/profileImage/{id}} : Change profile image
+     *
+     * @param id ID of the specified user
+     * @param profileImageURLChangeRequest Request with the new profile image URL as {@link ProfileImageURLChangeRequestDTO}
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and updated user as {@link UserDTO} in the body,
+     * or with status {@code 404 (Not found)} if the user does not exist,
+     * or with status {@code 400 (Bad request} if the request is invalid
+     */
     @PutMapping("/api/users/profileImage/{id}")
     public ResponseEntity<UserDTO> changeProfileImage(
             @PathVariable UUID id,
@@ -92,17 +155,33 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 
+    /**
+     * {@code PUT /api/users/tier/{id}} : Change subscription tier
+     *
+     * @param id ID of the specified user
+     * @param userTierUpdateRequest Request with the new tier type as {@link UserTierUpdateRequestDTO}
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and updated user as {@link UserDTO} in the body,
+     * or with status {@code 404 (Not found)} if the user does not exist,
+     * or with status {@code 400 (Bad request} if the request is invalid
+     */
     @PutMapping("/api/users/tier/{id}")
-    public ResponseEntity<Map<String, Object>> updateTier(
+    public ResponseEntity<UserDTO> changeTier(
             @PathVariable UUID id,
             @RequestBody UserTierUpdateRequestDTO userTierUpdateRequest
             ) {
-        userService.updateTier(id, userTierUpdateRequest.getTier());
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Tier set to " + userTierUpdateRequest.getTier().toString());
-        return ResponseEntity.ok(response);
+        UserDTO user = userService.getUserById(id);
+        user.setTier(userTierUpdateRequest.getTier());
+        return ResponseEntity.ok(userService.updateUser(user, id));
     }
 
+    /**
+     * {@code DELETE /api/users/{userId}/friends/{friendId}} : Reject friend request OR Remove friend
+     *
+     * @param userId ID of the user that sent the friend request
+     * @param friendId ID of the user to whom the friend request was sent to
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and confirmation message in the body,
+     * or with status {@code 404 (Not found)} if either friend request does not exist or users are not friends
+     */
     @DeleteMapping("/api/users/{userId}/friends/{friendId}")
     public ResponseEntity<Map<String, Object>> rejectFriendRequest(
             @PathVariable UUID userId,
@@ -111,13 +190,23 @@ public class UserController {
         FriendRequestDTO friendRequest = userService.getFriendRequestByUserIdAndFriendId(userId, friendId);
 
         Map<String, Object> response = new HashMap<>();
+        // If the request is pending, then it is rejected
         if (friendRequest.isPendingRequest()) response.put("message", "Friend request rejected");
+        // If it was accepted before, then the friend is removed
         else response.put("message", "Friend removed");
 
         userService.rejectFriendRequest(userId, friendId);
+
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * {@code DELETE /api/users/{id}} : Remove user
+     *
+     * @param id ID of the user to be removed
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and confirmation message in the body,
+     * or with status {@code 404 (Not found)} if user does not exist
+     */
     @DeleteMapping("/api/users/{id}")
     public ResponseEntity<Map<String, Object>> removeUser(@PathVariable UUID id) {
         userService.deleteUser(id);

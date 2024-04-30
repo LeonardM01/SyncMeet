@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Service Interface for managing {@link Event}
+ */
 public interface EventService {
 
     EventDTO toDTO(Event event);

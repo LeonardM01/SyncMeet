@@ -8,7 +8,6 @@ import com.example.syncmeet.error.exception.IdMismatchException;
 import com.example.syncmeet.model.FriendRequest;
 
 import com.example.syncmeet.model.User;
-import com.example.syncmeet.model.User.TierType;
 import com.example.syncmeet.repository.FriendRequestRepository;
 import com.example.syncmeet.repository.UserRepository;
 import com.example.syncmeet.service.UserService;
@@ -22,7 +21,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
+/**
+ * Service Implementation for managing {@link User} and {@link FriendRequest}
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -130,13 +131,6 @@ public class UserServiceImpl implements UserService {
         }
 
         return createUser(user);
-    }
-
-    @Override
-    public void updateTier(UUID id, TierType tier) {
-        UserDTO user = getUserById(id);
-        user.setTier(tier);
-        updateUser(user, id);
     }
 
     @Override

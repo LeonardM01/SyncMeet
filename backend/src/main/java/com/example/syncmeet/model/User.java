@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * User entity
+ */
 @Entity
 @Table(name = "users")
 @Data
@@ -48,9 +51,8 @@ public class User {
     private Set<Event> events;
 
     /**
-    *
     * For excluding the bidirectional relationship
-     */
+    */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

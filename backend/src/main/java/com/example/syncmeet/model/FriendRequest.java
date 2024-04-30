@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.UUID;
 
+/**
+ * Friend request entity
+ */
 @Entity
 @Table(name = "friend_requests")
 @Data
