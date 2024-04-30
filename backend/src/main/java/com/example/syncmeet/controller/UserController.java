@@ -47,7 +47,14 @@ public class UserController {
     }
 
     @PostMapping("/api/users")
-    public ResponseEntity<Map<String, Object>> signUp(@Valid @RequestBody UserDTO user) {
+    public ResponseEntity<Map<String, Object>> signUp(@Valid @RequestBody UserSignUpRequestDTO userSignUpRequest) {
+        UserDTO user = new UserDTO(
+                null,
+                userSignUpRequest.getUsername(),
+                userSignUpRequest.getEmail(),
+                userSignUpRequest.getProfileImageUrl(),
+                userSignUpRequest.getTier()
+                );
         userService.createUser(user);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Signed up successfully");

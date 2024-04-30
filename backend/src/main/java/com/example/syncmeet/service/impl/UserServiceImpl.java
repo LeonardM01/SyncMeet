@@ -5,7 +5,6 @@ import com.example.syncmeet.dto.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
 import com.example.syncmeet.error.exception.IdMismatchException;
 
-import com.example.syncmeet.error.exception.InvalidTierException;
 import com.example.syncmeet.model.FriendRequest;
 
 import com.example.syncmeet.model.User;
@@ -135,14 +134,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateTier(UUID id, TierType tier) {
-        try {
-            UserDTO user = getUserById(id);
-            user.setTier(tier);
-            updateUser(user, id);
-        }
-        catch (IllegalArgumentException ex) {
-            throw new InvalidTierException("Invalid tier value: " + tier.toString());
-        }
+        UserDTO user = getUserById(id);
+        user.setTier(tier);
+        updateUser(user, id);
     }
 
     @Override
