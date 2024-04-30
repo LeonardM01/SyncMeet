@@ -1,5 +1,6 @@
 package com.example.syncmeet.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventColorUpdateRequestDTO {
-
+    @NotNull(message = "Color is required")
     private String color;
 }
