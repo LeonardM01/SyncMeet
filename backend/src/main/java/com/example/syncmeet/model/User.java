@@ -27,6 +27,10 @@ public class User {
     @Column(name = "profile_image")
     private String profileImageUrl;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tier")
+    private TierType tier;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -58,5 +62,11 @@ public class User {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    public enum TierType {
+        free,
+        basic,
+        advance
     }
 }

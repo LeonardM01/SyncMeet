@@ -5,9 +5,11 @@ import com.example.syncmeet.dto.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
 import com.example.syncmeet.error.exception.IdMismatchException;
 
+import com.example.syncmeet.error.exception.InvalidTierException;
 import com.example.syncmeet.model.FriendRequest;
 
 import com.example.syncmeet.model.User;
+import com.example.syncmeet.model.User.TierType;
 import com.example.syncmeet.repository.FriendRequestRepository;
 import com.example.syncmeet.repository.UserRepository;
 import com.example.syncmeet.service.UserService;
@@ -129,6 +131,18 @@ public class UserServiceImpl implements UserService {
         }
 
         return createUser(user);
+    }
+
+    @Override
+    public void updateTier(UUID id, TierType tier) {
+        try {
+            UserDTO user = getUserById(id);
+            user.setTier(tier);
+            updateUser(user, id);
+        }
+        catch (IllegalArgumentException ex) {
+            throw new InvalidTierException("Invalid tier value: " + tier.toString());
+        }
     }
 
     @Override

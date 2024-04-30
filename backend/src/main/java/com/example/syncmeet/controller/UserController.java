@@ -1,10 +1,7 @@
 package com.example.syncmeet.controller;
 
-import com.example.syncmeet.dto.ProfileImageURLChangeRequestDTO;
-import com.example.syncmeet.dto.FriendRequestDTO;
+import com.example.syncmeet.dto.*;
 
-import com.example.syncmeet.dto.UserDTO;
-import com.example.syncmeet.dto.UsernameChangeRequestDTO;
 import com.example.syncmeet.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +83,17 @@ public class UserController {
         UserDTO user = userService.getUserById(id);
         user.setProfileImageUrl(profileImageURLChangeRequest.getProfileImageUrl());
         return ResponseEntity.ok(userService.updateUser(user, id));
+    }
+
+    @PutMapping("/api/users/tier/{id}")
+    public ResponseEntity<Map<String, Object>> updateTier(
+            @PathVariable UUID id,
+            @RequestBody UserTierUpdateRequestDTO userTierUpdateRequest
+            ) {
+        userService.updateTier(id, userTierUpdateRequest.getTier());
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Tier set to " + userTierUpdateRequest.getTier().toString());
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/api/users/{userId}/friends/{friendId}")

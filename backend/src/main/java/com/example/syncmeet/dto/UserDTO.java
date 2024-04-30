@@ -1,5 +1,6 @@
 package com.example.syncmeet.dto;
 
+import com.example.syncmeet.model.User.TierType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,4 +27,6 @@ public class UserDTO {
     private String email;
 
     private String profileImageUrl;
+
+    private TierType tier;
 }

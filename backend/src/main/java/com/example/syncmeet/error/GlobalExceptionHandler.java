@@ -2,6 +2,7 @@ package com.example.syncmeet.error;
 
 import com.example.syncmeet.error.exception.EntityNotFoundException;
 
+import com.example.syncmeet.error.exception.InvalidTierException;
 import com.example.syncmeet.error.exception.UserEventMembershipException;
 import com.example.syncmeet.error.exception.IdMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,7 +13,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,9 +65,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UserEventMembershipException.class)
     public Map<String, Object> handleUserEventMembership(EntityNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return response;
+    }
+
+    @ExceptionHandler(InvalidTierException.class)
+    public Map<String, Object> handleInvalidTier(InvalidTierException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         return response;

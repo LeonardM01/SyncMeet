@@ -4,6 +4,7 @@ import com.example.syncmeet.dto.FriendRequestDTO;
 import com.example.syncmeet.dto.UserDTO;
 import com.example.syncmeet.model.FriendRequest;
 import com.example.syncmeet.model.User;
+import com.example.syncmeet.model.User.TierType;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,8 @@ public interface UserService {
     UserDTO createUser(UserDTO userDTO);
 
     UserDTO updateUser(UserDTO user, UUID id);
+
+    void updateTier(UUID id, TierType tier);
 
     void deleteUser(UUID id);
 }
