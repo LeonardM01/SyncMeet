@@ -167,7 +167,7 @@ public class UserController {
     @PutMapping("/api/users/tier/{id}")
     public ResponseEntity<UserDTO> changeTier(
             @PathVariable UUID id,
-            @RequestBody UserTierUpdateRequestDTO userTierUpdateRequest
+            @Valid @RequestBody UserTierUpdateRequestDTO userTierUpdateRequest
             ) {
         UserDTO user = userService.getUserById(id);
         user.setTier(userTierUpdateRequest.getTier());
