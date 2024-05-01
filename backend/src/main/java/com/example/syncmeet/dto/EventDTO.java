@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * DTO for the {@link com.example.syncmeet.model.Event} entity
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

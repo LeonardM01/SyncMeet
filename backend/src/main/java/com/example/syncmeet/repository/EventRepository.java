@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Spring Data JPA repository for {@link Event}
+ */
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
 

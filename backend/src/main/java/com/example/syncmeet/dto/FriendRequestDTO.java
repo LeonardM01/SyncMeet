@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * DTO for the {@link com.example.syncmeet.model.FriendRequest} entity
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Service Implementation for managing {@link Event}
+ */
 @Service
 public class EventServiceImpl implements EventService {
 

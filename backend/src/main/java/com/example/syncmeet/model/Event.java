@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Event entity
+ */
 @Entity
 @Table(name = "event")
 @Data

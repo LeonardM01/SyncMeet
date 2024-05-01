@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
+/**
+ * Service Implementation for managing {@link User} and {@link FriendRequest}
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
