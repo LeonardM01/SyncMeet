@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventVisibleUpdateRequestDTO {
+public class EventVisibilityUpdateRequestDTO {
     @NotNull(message = "Visibility is required")
     private boolean visible;
 }

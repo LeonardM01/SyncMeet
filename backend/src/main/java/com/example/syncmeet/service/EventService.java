@@ -1,7 +1,9 @@
 package com.example.syncmeet.service;
 
 import com.example.syncmeet.dto.EventDTO;
+import com.example.syncmeet.dto.EventRequestDTO;
 import com.example.syncmeet.model.Event;
+import com.example.syncmeet.model.EventRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,14 +18,28 @@ public interface EventService {
      * @param event the entity to convert
      * @return the DTO
      */
-    EventDTO toDTO(Event event);
+    EventDTO eventToDTO(Event event);
 
     /**
      * Convert an Event DTO to an entity
      * @param eventDTO the DTO to convert
      * @return the entity
      */
-    Event toEntity(EventDTO eventDTO);
+    Event eventToEntity(EventDTO eventDTO);
+
+    /**
+     * Convert an EventRequest entity to a DTO
+     * @param eventRequest the entity to convert
+     * @return the DTO
+     */
+    EventRequestDTO eventRequestToDTO(EventRequest eventRequest);
+
+    /**
+     * Convert an EventRequest DTO to an entity
+     * @param eventRequestDTO the DTO to convert
+     * @return the entity
+     */
+    EventRequest eventRequestToEntity(EventRequestDTO eventRequestDTO);
 
     /**
      * Get an event by its id
@@ -33,20 +49,58 @@ public interface EventService {
     EventDTO getEventById(UUID id);
 
     /**
-     * Get all active events that start between two dates
-     * @param start the start date
-     * @param end the end date
-     * @return the list of events
+     * Get an event request by its id
+     * @param userId the id of the user
+     * @param eventId the id of the event
+     * @return the event request
      */
-    List<EventDTO> getActiveEventsByStartDateBetween(LocalDateTime start, LocalDateTime end);
+    EventRequestDTO getEventRequestByUserIdAndEventId(UUID userId, UUID eventId);
 
     /**
-     * Get all pending events that start between two dates
+     * Get all events owned by a user
+     * @param id the id of the user
+     * @return the list of events
+     */
+    List<EventDTO> getEventsByOwner(UUID id);
+
+    /**
+     * Get all pending events owned by a user
+     * @param id the id of the user
+     * @return the list of events
+     */
+    List<EventDTO> getPendingEventsByOwner(UUID id);
+
+    /**
+     * Get all active events owned by a user
+     * @param id the id of the user
+     * @return the list of events
+     */
+    List<EventDTO> getActiveEventsByOwner(UUID id);
+
+    /**
+     * Get all pending events owned by a user and start between two dates
+     * @param id the id of the user
      * @param start the start date
      * @param end the end date
      * @return the list of events
      */
-    List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end);
+    List<EventDTO> getPendingEventsByOwnerAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end);
+
+    /**
+     * Get all active events owned by a user and start between two dates
+     * @param id the id of the user
+     * @param start the start date
+     * @param end the end date
+     * @return the list of events
+     */
+    List<EventDTO> getActiveEventsByOwnerAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end);
+
+    /**
+     * Get all events that a user is a part of
+     * @param id the id of the user
+     * @return the list of events
+     */
+    List<EventDTO> getEventsByUser(UUID id);
 
     /**
      * Get all pending events that a user is a part of and start between two dates
@@ -81,31 +135,27 @@ public interface EventService {
     List<EventDTO> getActiveEventsByUser(UUID id);
 
     /**
-     * Add a user to an event
-     * @param userId the id of the user
+     * Create an event request
+     *
+     * @param userId  the id of the user
      * @param eventId the id of the event
      */
-    void addUserToEvent(UUID userId, UUID eventId);
-
-    /**
-     * Remove a user from an event
-     * @param userId the id of the user
-     * @param eventId the id of the event
-     */
-    void removeUserFromEvent(UUID userId, UUID eventId);
+    void createEventRequest(UUID userId, UUID eventId);
 
     /**
      * Accept an event
-     * @param id the id of the event
+     * @param userId the id of the user
+     * @param eventId the id of the event
      */
-    void acceptEvent(UUID id);
+    void acceptEvent(UUID userId, UUID eventId);
 
     /**
      * Create an event
      * @param eventDTO the event to create
+     * @param ownerId the id of the owner
      * @return the created event
      */
-    EventDTO createEvent(EventDTO eventDTO);
+    EventDTO createEvent(EventDTO eventDTO, UUID ownerId);
 
     /**
      * Update an event
@@ -120,4 +170,11 @@ public interface EventService {
      * @param id the id of the event
      */
     void deleteEvent(UUID id);
+
+    /**
+     * Delete an event request
+     * @param userId the id of the user
+     * @param eventId the id of the event
+     */
+    void deleteEventRequest(UUID userId, UUID eventId);
 }

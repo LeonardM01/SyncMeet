@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserEventMembershipException.class)
-    public Map<String, Object> handleUserEventMembership(EntityNotFoundException ex) {
+    public Map<String, Object> handleUserEventMembership(UserEventMembershipException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("error", ex.getMessage());
         return response;
