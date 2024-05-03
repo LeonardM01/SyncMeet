@@ -293,7 +293,7 @@ public class EventController {
     /**
      * {@code PUT /api/event/start/{id}} : Update event visibility
      * @param id ID of the event
-     * @param eventVisibleUpdateRequest New visibility of the event
+     * @param eventVisibilityUpdateRequest New visibility of the event
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the updated event as {@link EventDTO},
      * or with status {@code 404 (Not Found)} if the event does not exist,
      * or with status {@code 400 (Bad request} if the request is invalid
@@ -301,18 +301,17 @@ public class EventController {
     @PutMapping("/api/event/visible/{id}")
     public ResponseEntity<EventDTO> updateVisibility(
             @PathVariable UUID id,
-            @RequestBody EventVisibilityUpdateRequestDTO eventVisibleUpdateRequest
-            @Valid @RequestBody EventVisibleUpdateRequestDTO eventVisibleUpdateRequest
+            @Valid @RequestBody EventVisibilityUpdateRequestDTO eventVisibilityUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
-        event.setVisible(eventVisibleUpdateRequest.isVisible());
+        event.setVisible(eventVisibilityUpdateRequest.isVisible());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
     /**
      * {@code PUT /api/event/start/{id}} : Update event recurrence
      * @param id ID of the event
-     * @param eventRecurringUpdateRequest New recurrence of the event
+     * @param eventRecurrenceUpdateRequest New recurrence of the event
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the updated event as {@link EventDTO},
      * or with status {@code 404 (Not Found)} if the event does not exist,
      * or with status {@code 400 (Bad request} if the request is invalid
@@ -320,11 +319,10 @@ public class EventController {
     @PutMapping("/api/event/recurring/{id}")
     public ResponseEntity<EventDTO> updateRecurrence(
             @PathVariable UUID id,
-            @RequestBody EventRecurrenceUpdateRequestDTO eventRecurringUpdateRequest
-            @Valid @RequestBody EventRecurringUpdateRequestDTO eventRecurringUpdateRequest
+            @Valid @RequestBody EventRecurrenceUpdateRequestDTO eventRecurrenceUpdateRequest
     ) {
         EventDTO event = eventService.getEventById(id);
-        event.setRecurring(eventRecurringUpdateRequest.isRecurring());
+        event.setRecurring(eventRecurrenceUpdateRequest.isRecurring());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 

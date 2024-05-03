@@ -148,20 +148,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDTO> getEventsByUser(UUID id) {
         return eventRepository.findByUserId(id).stream().map(this::eventToDTO).collect(Collectors.toList());
-
-    public List<EventDTO> getActiveEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
-        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
-
-        return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsFalse(start, end)
-                .stream().map(this::toDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
-        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
-
-        return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsTrue(start, end)
-                .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
