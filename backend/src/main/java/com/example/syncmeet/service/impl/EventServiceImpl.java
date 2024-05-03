@@ -5,6 +5,8 @@ import com.example.syncmeet.dto.EventRequestDTO;
 import com.example.syncmeet.dto.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
 import com.example.syncmeet.error.exception.RequestException;
+
+import com.example.syncmeet.error.exception.InvalidDateOrderException;
 import com.example.syncmeet.error.exception.UserEventMembershipException;
 import com.example.syncmeet.model.Event;
 import com.example.syncmeet.model.EventRequest;
@@ -146,16 +148,34 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDTO> getEventsByUser(UUID id) {
         return eventRepository.findByUserId(id).stream().map(this::eventToDTO).collect(Collectors.toList());
+
+    public List<EventDTO> getActiveEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
+
+        return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsFalse(start, end)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
+
+        return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsTrue(start, end)
+                .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<EventDTO> getPendingEventsByUserAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
+
         return eventRepository.findEventsByUserIdAndStartDateTimeBetweenAndPendingIsTrue(id, start, end)
                 .stream().map(this::eventToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<EventDTO> getActiveEventsByUserAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
+
         return eventRepository.findEventsByUserIdAndStartDateTimeBetweenAndPendingIsFalse(id, start, end)
                 .stream().map(this::eventToDTO).collect(Collectors.toList());
     }

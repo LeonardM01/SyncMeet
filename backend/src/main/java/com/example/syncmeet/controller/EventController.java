@@ -265,7 +265,7 @@ public class EventController {
     @PutMapping("/api/event/description/{id}")
     public ResponseEntity<EventDTO> updateDescription(
             @PathVariable UUID id,
-            @RequestBody EventDescriptionUpdateRequestDTO eventDescriptionUpdateRequest
+            @Valid @RequestBody EventDescriptionUpdateRequestDTO eventDescriptionUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
         event.setDescription(eventDescriptionUpdateRequest.getDescription());
@@ -283,7 +283,7 @@ public class EventController {
     @PutMapping("/api/event/color/{id}")
     public ResponseEntity<EventDTO> updateColor(
             @PathVariable UUID id,
-            @RequestBody EventColorUpdateRequestDTO eventColorUpdateRequest
+            @Valid @RequestBody EventColorUpdateRequestDTO eventColorUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
         event.setColor(eventColorUpdateRequest.getColor());
@@ -302,6 +302,7 @@ public class EventController {
     public ResponseEntity<EventDTO> updateVisibility(
             @PathVariable UUID id,
             @RequestBody EventVisibilityUpdateRequestDTO eventVisibleUpdateRequest
+            @Valid @RequestBody EventVisibleUpdateRequestDTO eventVisibleUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
         event.setVisible(eventVisibleUpdateRequest.isVisible());
@@ -320,6 +321,7 @@ public class EventController {
     public ResponseEntity<EventDTO> updateRecurrence(
             @PathVariable UUID id,
             @RequestBody EventRecurrenceUpdateRequestDTO eventRecurringUpdateRequest
+            @Valid @RequestBody EventRecurringUpdateRequestDTO eventRecurringUpdateRequest
     ) {
         EventDTO event = eventService.getEventById(id);
         event.setRecurring(eventRecurringUpdateRequest.isRecurring());
