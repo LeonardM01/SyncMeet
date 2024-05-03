@@ -50,6 +50,8 @@ public class UserController {
     }
 
     /**
+     * {@code GET /api/users/{id}} : Fetch all friends of a user
+     *
      * @param id ID of the specified user
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with all friends of the user as {@link UserDTO},
      * or with status {@code 404 (Not Found)} if the user does not exist
@@ -57,6 +59,30 @@ public class UserController {
     @GetMapping("/api/users/friends/{id}")
     public ResponseEntity<List<UserDTO>> getFriends(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getAllFriends(id));
+    }
+
+    /**
+     * {@code GET /api/users/{id}} : Fetch user by ID
+     *
+     * @param id ID of wanted user
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the user as {@link UserDTO},
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
+    @GetMapping("/api/users/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    /**
+     * {@code GET /api/users/events/{eventId}} : Fetch all users of an event
+     *
+     * @param eventId ID of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with all users of the event as {@link UserDTO}s
+     * in the body
+     */
+    @GetMapping("/api/users/events/{eventId}")
+    public ResponseEntity<List<UserDTO>> getUsersByEventId(@PathVariable UUID eventId) {
+        return ResponseEntity.ok(userService.getUsersByEventId(eventId));
     }
 
     /**

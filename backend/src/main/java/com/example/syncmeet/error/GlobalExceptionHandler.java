@@ -78,6 +78,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UserEventMembershipException.class)
+    public Map<String, Object> handleUserEventMembership(UserEventMembershipException ex) {
     /**
      * Handles exceptions thrown when a date is invalid
      */

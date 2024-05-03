@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventRecurringUpdateRequestDTO {
+public class EventRecurrenceUpdateRequestDTO {
     @NotNull(message = "Recurrence is required")
     private boolean recurring;
 }

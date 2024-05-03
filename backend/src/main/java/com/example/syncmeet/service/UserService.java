@@ -100,6 +100,13 @@ public interface UserService {
     UserDTO getUserById(UUID id);
 
     /**
+     * Get users by event ID
+     * @param eventId ID of the event
+     * @return The list of all users that are part of the event with specified ID as {@link UserDTO}s
+     */
+    List<UserDTO> getUsersByEventId(UUID eventId);
+
+    /**
      * Get all friends of the user with specified ID
      *
      * @param id ID of the wanted user

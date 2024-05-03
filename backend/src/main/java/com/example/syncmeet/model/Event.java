@@ -6,7 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -42,9 +41,6 @@ public class Event {
     @Column(name = "recurring")
     private boolean recurring;
 
-    @Column(name = "pending")
-    private boolean pending;
-
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -53,8 +49,9 @@ public class Event {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToMany(mappedBy = "events")
-    private Set<User> users;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     /**
      *

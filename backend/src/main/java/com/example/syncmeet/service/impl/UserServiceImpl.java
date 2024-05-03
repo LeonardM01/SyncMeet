@@ -8,12 +8,14 @@ import com.example.syncmeet.error.exception.IdMismatchException;
 import com.example.syncmeet.model.FriendRequest;
 
 import com.example.syncmeet.model.User;
+import com.example.syncmeet.repository.EventRepository;
 import com.example.syncmeet.repository.FriendRequestRepository;
 import com.example.syncmeet.repository.UserRepository;
 import com.example.syncmeet.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.Objects;
@@ -25,16 +27,19 @@ import java.util.stream.Collectors;
  * Service Implementation for managing {@link User} and {@link FriendRequest}
  */
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final FriendRequestRepository friendRequestRepository;
+    private final EventRepository eventRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, FriendRequestRepository friendRequestRepository, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, FriendRequestRepository friendRequestRepository, EventRepository eventRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.friendRequestRepository = friendRequestRepository;
+        this.eventRepository = eventRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -106,6 +111,15 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserById(UUID id) {
         return userRepository.findById(id).map(this::userToDTO).orElseThrow(() ->
                 new EntityNotFoundException("User not found"));
+    }
+
+    @Override
+    public List<UserDTO> getUsersByEventId(UUID eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new EntityNotFoundException("Event not found");
+        }
+
+        return userRepository.findByEventId(eventId).stream().map(this::userToDTO).collect(Collectors.toList());
     }
 
     @Override
