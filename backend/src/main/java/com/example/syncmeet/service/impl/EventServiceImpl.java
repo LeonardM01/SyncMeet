@@ -2,6 +2,7 @@ package com.example.syncmeet.service.impl;
 
 import com.example.syncmeet.dto.EventDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
+import com.example.syncmeet.error.exception.InvalidDateOrderException;
 import com.example.syncmeet.error.exception.UserEventMembershipException;
 import com.example.syncmeet.model.Event;
 import com.example.syncmeet.model.User;
@@ -54,24 +55,32 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDTO> getActiveEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
+
         return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsFalse(start, end)
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<EventDTO> getPendingEventsByStartDateBetween(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
+
         return eventRepository.findEventsByStartDateTimeBetweenAndPendingIsTrue(start, end)
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<EventDTO> getPendingEventsByUserAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
+
         return eventRepository.findEventsByUserIdAndStartDateTimeBetweenAndPendingIsTrue(id, start, end)
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<EventDTO> getActiveEventsByUserAndStartDateBetween(UUID id, LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) throw new InvalidDateOrderException("Start date cannot be after end date");
+
         return eventRepository.findEventsByUserIdAndStartDateTimeBetweenAndPendingIsFalse(id, start, end)
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
