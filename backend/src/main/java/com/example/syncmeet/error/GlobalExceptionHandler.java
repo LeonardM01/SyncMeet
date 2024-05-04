@@ -1,10 +1,7 @@
 package com.example.syncmeet.error;
 
-import com.example.syncmeet.error.exception.EntityNotFoundException;
+import com.example.syncmeet.error.exception.*;
 
-import com.example.syncmeet.error.exception.InvalidDateOrderException;
-import com.example.syncmeet.error.exception.UserEventMembershipException;
-import com.example.syncmeet.error.exception.IdMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.http.HttpStatus;
@@ -33,7 +30,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             IdMismatchException.class,
             UserEventMembershipException.class,
-            InvalidDateOrderException.class
+            InvalidDateOrderException.class,
+            RequestException.class
     })
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         Map<String, Object> response = new HashMap<>();
@@ -78,8 +76,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserEventMembershipException.class)
-    public Map<String, Object> handleUserEventMembership(UserEventMembershipException ex) {
     /**
      * Handles exceptions thrown when a date is invalid
      */
