@@ -5,6 +5,7 @@ import com.example.syncmeet.dto.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
 import com.example.syncmeet.error.exception.IdMismatchException;
 
+import com.example.syncmeet.error.exception.RequestException;
 import com.example.syncmeet.model.FriendRequest;
 
 import com.example.syncmeet.model.User;
@@ -72,6 +73,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public FriendRequestDTO createFriendRequest(UUID userId, UUID friendId) {
+        if (userId.equals(friendId)) {
+            throw new RequestException("Users can't be friends with themselves");
+        }
+        if (friendRequestRepository.findByUserIdAndFriendId(userId, friendId).isPresent()) {
+            throw new RequestException("Friend request already exists");
+        }
+
         UserDTO user = getUserById(userId);
         UserDTO friend = getUserById(friendId);
 
@@ -86,6 +94,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void acceptFriendRequest(UUID userId, UUID friendId) {
         FriendRequestDTO friendRequest = getFriendRequestByUserIdAndFriendId(userId, friendId);
+        if (!friendRequest.isPendingRequest()) {
+            throw new RequestException("Users are already friends");
+        }
         friendRequest.setPendingRequest(false);
         friendRequestRepository.save(friendRequestDTOToEntity(friendRequest));
     }
