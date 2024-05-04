@@ -15,8 +15,9 @@ import java.util.UUID;
  */
 @Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, UUID> {
-    @Query("SELECT CASE WHEN fr.user.id = :userId THEN fr.friend ELSE fr.user END FROM FriendRequest fr WHERE fr.user.id = :userId OR fr.friend.id = :userId")
+    @Query("SELECT CASE WHEN fr.user.id = :userId THEN fr.friend ELSE fr.user END FROM FriendRequest fr WHERE fr.user.id = :userId OR fr.friend.id = :userId AND fr.pendingRequest = false")
     List<FriendRequest> findByUserIdAndPendingRequestFalse(@Param("userId") UUID userId);
 
-    Optional<FriendRequest> findByUserIdAndFriendId(UUID userId, UUID friendId);
+    @Query("SELECT fr FROM FriendRequest fr WHERE (:userId = fr.user.id AND :friendId = fr.friend.id) OR (:userId = fr.friend.id AND :friendId = fr.user.id)")
+    Optional<FriendRequest> findByUserIdAndFriendId(@Param("userId") UUID userId, @Param("friendId") UUID friendId);
 }
