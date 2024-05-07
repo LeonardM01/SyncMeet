@@ -6,21 +6,19 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.UUID;
 
+/**
+ * Event entity
+ */
 @Entity
 @Table(name = "event")
 @Data
 public class Event {
 
     @Id
-    @SequenceGenerator(
-            name = "event_generator",
-            sequenceName = "event_seq",
-            allocationSize = 1
-    )
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_generator")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
@@ -43,9 +41,6 @@ public class Event {
     @Column(name = "recurring")
     private boolean recurring;
 
-    @Column(name = "pending")
-    private boolean pending;
-
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -54,8 +49,9 @@ public class Event {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToMany(mappedBy = "events")
-    private Set<User> users;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     /**
      *

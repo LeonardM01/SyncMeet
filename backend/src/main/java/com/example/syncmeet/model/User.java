@@ -6,17 +6,19 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.UUID;
 
+/**
+ * User entity
+ */
 @Entity
 @Table(name = "users")
 @Data
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
-    @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(unique = true, name = "username")
     private String username;
@@ -27,6 +29,10 @@ public class User {
     @Column(name = "profile_image")
     private String profileImageUrl;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tier")
+    private TierType tier;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -35,18 +41,9 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "user_event",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id")
-    )
-    private Set<Event> events;
-
     /**
-    *
     * For excluding the bidirectional relationship
-     */
+    */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,5 +55,11 @@ public class User {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    public enum TierType {
+        free,
+        basic,
+        advance
     }
 }

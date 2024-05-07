@@ -3,14 +3,18 @@ package com.example.syncmeet.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.UUID;
+
+/**
+ * Friend request entity
+ */
 @Entity
 @Table(name = "friend_requests")
 @Data
 public class FriendRequest {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_id_sequence")
-    @SequenceGenerator(name = "global_id_sequence", sequenceName = "global_id_sequence", allocationSize = 1)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

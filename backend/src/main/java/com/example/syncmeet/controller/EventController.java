@@ -12,8 +12,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+/**
+ * REST controller for managing {@link com.example.syncmeet.model.Event}
+ */
 @RestController
+@RequestMapping("/api")
 public class EventController {
 
     private final EventService eventService;
@@ -24,33 +29,124 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @PostMapping("/api/event")
-    public ResponseEntity<Map<String, Object>> createEvent(@Valid @RequestBody EventDTO event) {
-        eventService.createEvent(event);
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Event created successfully");
-        return ResponseEntity.ok(response);
+    /**
+     * {@code POST /event} : Create a new event
+     *
+     * @param eventCreationRequestDTO the event to create
+     * @param ownerId ID of the owner of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the created event as {@link EventDTO},
+     * or with status {@code 400 (Bad Request)} if the event is invalid
+     */
+    @PostMapping("/event/{ownerId}")
+    public ResponseEntity<EventDTO> createEvent(
+            @Valid @RequestBody EventCreationRequestDTO eventCreationRequestDTO,
+            @PathVariable UUID ownerId
+    ) {
+        EventDTO event = new EventDTO();
+        event.setStartDateTime(eventCreationRequestDTO.getStartDateTime());
+        event.setEndDateTime(eventCreationRequestDTO.getEndDateTime());
+        event.setName(eventCreationRequestDTO.getName());
+        event.setDescription(eventCreationRequestDTO.getDescription());
+        event.setColor(eventCreationRequestDTO.getColor());
+        event.setVisible(eventCreationRequestDTO.isVisible());
+        event.setRecurring(eventCreationRequestDTO.isRecurring());
+
+        return ResponseEntity.ok(eventService.createEvent(event, ownerId));
     }
 
-    @GetMapping("/api/event/active")
-    public ResponseEntity<List<EventDTO>> getActiveEventsByStartDateBetween(
+    /**
+     * {@code GET /event/owner/{id}} : Fetch all events where a user is the owner
+     *
+     * @param id ID of the user
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all events of the user as {@link EventDTO}s,
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
+    @GetMapping("/event/owner/{id}")
+    public ResponseEntity<List<EventDTO>> getEventsByOwner(@PathVariable UUID id) {
+        return ResponseEntity.ok(eventService.getEventsByOwner(id));
+    }
+
+    /**
+     * {@code GET /event/pending/owner/{id}} : Fetch all pending events where a user is the owner
+     *
+     * @param id ID of the user
+     * @param startDate Start date of the interval
+     * @param endDate End date of the interval
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all pending events of the user as {@link EventDTO}s,
+     * or with status {@code 400 (Bad request)} if endDate is before startDate,
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
+    @GetMapping("/event/pending/owner/{id}")
+    public ResponseEntity<List<EventDTO>> getPendingEventsByOwnerAndStartDateBetween(
+            @PathVariable UUID id,
             @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
-        return ResponseEntity.ok(eventService.getActiveEventsByStartDateBetween(startDate, endDate));
+        List<EventDTO> events;
+
+        if (startDate != null && endDate != null) {
+            events = eventService.getPendingEventsByOwnerAndStartDateBetween(id, startDate, endDate);
+        }
+        else {
+            events = eventService.getPendingEventsByOwner(id);
+        }
+
+        return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/api/event/pending")
-    public ResponseEntity<List<EventDTO>> getPendingEventsByStartDateBetween(
+    /**
+     * {@code GET /event/active/owner/{id}} : Fetch all active events where a user is the owner
+     *
+     * @param id ID of the user
+     * @param startDate Start date of the interval
+     * @param endDate End date of the interval
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all active events of the user as {@link EventDTO}s,
+     * or with status {@code 400 (Bad request)} if endDate is before startDate,
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
+    @GetMapping("/event/active/owner/{id}")
+    public ResponseEntity<List<EventDTO>> getActiveEventsByOwnerAndStartDateBetween(
+            @PathVariable UUID id,
             @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
-        return ResponseEntity.ok(eventService.getPendingEventsByStartDateBetween(startDate, endDate));
+        List<EventDTO> events;
+
+        if (startDate != null && endDate != null) {
+            events = eventService.getActiveEventsByOwnerAndStartDateBetween(id, startDate, endDate);
+        }
+        else {
+            events = eventService.getActiveEventsByOwner(id);
+        }
+
+        return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/api/event/pending/{id}")
+    /**
+     * {@code GET /event/user/{id}} : Fetch all events of a user
+     *
+     * @param id ID of the user
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all events of the user as {@link EventDTO}s,
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
+    @GetMapping("/event/user/{id}")
+    public ResponseEntity<List<EventDTO>> getEventsByUser(@PathVariable UUID id) {
+        return ResponseEntity.ok(eventService.getEventsByUser(id));
+    }
+
+    /**
+     * {@code GET /event/pending/{id}} : Fetch all pending events of a user
+     *
+     * @param id ID of the user
+     * @param startDate Start date of the interval
+     * @param endDate End date of the interval
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all pending events of the user as {@link EventDTO}s,
+     * or with status {@code 400 (Bad request)} if endDate is before startDate,
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
+    @GetMapping("/event/pending/{id}")
     public ResponseEntity<List<EventDTO>> getPendingEventsByUser(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
@@ -66,9 +162,18 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/api/event/active/{id}")
+    /**
+     * {@code GET /event/active/{id}} : Fetch all active events of a user
+     * @param id ID of the user
+     * @param startDate Start date of the interval
+     * @param endDate End date of the interval
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all active events of the user as {@link EventDTO}s,
+     * or with status {@code 400 (Bad request)} if endDate is before startDate,
+     * or with status {@code 404 (Not Found)} if the user does not exist
+     */
+    @GetMapping("/event/active/{id}")
     public ResponseEntity<List<EventDTO>> getActiveEventsByUser(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(name = "end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
@@ -84,36 +189,65 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/api/event/{id}")
-    public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
+    /**
+     * {@code GET /event/{id}} : Fetch event by ID
+     * @param id ID of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the event as {@link EventDTO},
+     * or with status {@code 404 (Not Found)} if the event does not exist
+     */
+    @GetMapping("/event/{id}")
+    public ResponseEntity<EventDTO> getEventById(@PathVariable UUID id) {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
-    @PutMapping("/api/event/{eventId}/user/{userId}/add")
-    public ResponseEntity<Map<String, Object>> addUserToEvent(
-            @PathVariable Long userId,
-            @PathVariable Long eventId
+    /**
+     * {@code PUT /event/{eventId}/user/{userId}/send} : Send event request
+     * @param userId ID of the user to be added
+     * @param eventId ID of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)}
+     * and a message that the event request was sent and the event request as {@link EventRequestDTO},
+     * or with status {@code 404 (Not Found)} if the user or the event does not exist
+     */
+    @PutMapping("/event/{eventId}/user/{userId}/send")
+    public ResponseEntity<Map<String, Object>> sendEventRequest(
+            @PathVariable UUID userId,
+            @PathVariable UUID eventId
     ) {
-        eventService.addUserToEvent(userId, eventId);
+        eventService.createEventRequest(userId, eventId);
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "User added to event");
+        response.put("message", "Event request sent");
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/api/event/{eventId}/user/{userId}/remove")
+    /**
+     * {@code PUT /event/{eventId}/user/{userId}/remove} : Remove user from event
+     * @param userId ID of the user to be removed
+     * @param eventId ID of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and a message that the user was removed from the event,
+     * or with status {@code 404 (Not Found)} if the user or the event does not exist
+     */
+    @PutMapping("/event/{eventId}/user/{userId}/remove")
     public ResponseEntity<Map<String, Object>> removeUserFromEvent(
-            @PathVariable Long userId,
-            @PathVariable Long eventId
+            @PathVariable UUID userId,
+            @PathVariable UUID eventId
     ) {
-        eventService.removeUserFromEvent(userId, eventId);
+        eventService.deleteEventRequest(userId, eventId);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "User removed from event");
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/api/event/name/{id}")
+    /**
+     * {@code PUT /event/name/{id}} : Update event name
+     * @param id ID of the event
+     * @param eventNameUpdateRequest New name of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the updated event as {@link EventDTO},
+     * or with status {@code 404 (Not Found)} if the event does not exist,
+     * or with status {@code 400 (Bad request} if the request is invalid
+     */
+    @PutMapping("/event/name/{id}")
     public ResponseEntity<EventDTO> updateName(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody EventNameUpdateRequestDTO eventNameUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
@@ -121,65 +255,133 @@ public class EventController {
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("/api/event/description/{id}")
+    /**
+     * {@code PUT /event/description/{id}} : Update event description
+     * @param id ID of the event
+     * @param eventDescriptionUpdateRequest New description of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the updated event as {@link EventDTO},
+     * or with status {@code 404 (Not Found)} if the event does not exist,
+     * or with status {@code 400 (Bad request} if the request is invalid
+     */
+    @PutMapping("/event/description/{id}")
     public ResponseEntity<EventDTO> updateDescription(
-            @PathVariable Long id,
-            @RequestBody EventDescriptionUpdateRequestDTO eventDescriptionUpdateRequest
+            @PathVariable UUID id,
+            @Valid @RequestBody EventDescriptionUpdateRequestDTO eventDescriptionUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
         event.setDescription(eventDescriptionUpdateRequest.getDescription());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("/api/event/color/{id}")
+    /**
+     * {@code PUT /event/start/{id}} : Update event color
+     * @param id ID of the event
+     * @param eventColorUpdateRequest New color of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the updated event as {@link EventDTO},
+     * or with status {@code 404 (Not Found)} if the event does not exist,
+     * or with status {@code 400 (Bad request} if the request is invalid
+     */
+    @PutMapping("/event/color/{id}")
     public ResponseEntity<EventDTO> updateColor(
-            @PathVariable Long id,
-            @RequestBody EventColorUpdateRequestDTO eventColorUpdateRequest
+            @PathVariable UUID id,
+            @Valid @RequestBody EventColorUpdateRequestDTO eventColorUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
         event.setColor(eventColorUpdateRequest.getColor());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("/api/event/visible/{id}")
+    /**
+     * {@code PUT /event/start/{id}} : Update event visibility
+     * @param id ID of the event
+     * @param eventVisibilityUpdateRequest New visibility of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the updated event as {@link EventDTO},
+     * or with status {@code 404 (Not Found)} if the event does not exist,
+     * or with status {@code 400 (Bad request} if the request is invalid
+     */
+    @PutMapping("/event/visible/{id}")
     public ResponseEntity<EventDTO> updateVisibility(
-            @PathVariable Long id,
-            @RequestBody EventVisibleUpdateRequestDTO eventVisibleUpdateRequest
+            @PathVariable UUID id,
+            @Valid @RequestBody EventVisibilityUpdateRequestDTO eventVisibilityUpdateRequest
             ) {
         EventDTO event = eventService.getEventById(id);
-        event.setVisible(eventVisibleUpdateRequest.isVisible());
+        event.setVisible(eventVisibilityUpdateRequest.isVisible());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("/api/event/recurring/{id}")
+    /**
+     * {@code PUT /event/start/{id}} : Update event recurrence
+     * @param id ID of the event
+     * @param eventRecurrenceUpdateRequest New recurrence of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the updated event as {@link EventDTO},
+     * or with status {@code 404 (Not Found)} if the event does not exist,
+     * or with status {@code 400 (Bad request} if the request is invalid
+     */
+    @PutMapping("/event/recurring/{id}")
     public ResponseEntity<EventDTO> updateRecurrence(
-            @PathVariable Long id,
-            @RequestBody EventRecurringUpdateRequestDTO eventRecurringUpdateRequest
+            @PathVariable UUID id,
+            @Valid @RequestBody EventRecurrenceUpdateRequestDTO eventRecurrenceUpdateRequest
     ) {
         EventDTO event = eventService.getEventById(id);
-        event.setRecurring(eventRecurringUpdateRequest.isRecurring());
+        event.setRecurring(eventRecurrenceUpdateRequest.isRecurring());
         return ResponseEntity.ok(eventService.updateEvent(event, id));
     }
 
-    @PutMapping("/api/event/accept/{id}")
-    public ResponseEntity<Map<String, Object>> acceptEvent(@PathVariable Long id) {
-        eventService.acceptEvent(id);
+    /**
+     * {@code PUT /event/start/{id}} : Accept event
+     * @param userId ID of the user
+     * @param eventId ID of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and a message that the event was accepted,
+     * or with status {@code 404 (Not Found)} if the event does not exist,
+     * or with status {@code 400 (Bad request} if the event is already accepted
+     */
+    @PutMapping("/event/accept/{userId}/{eventId}")
+    public ResponseEntity<Map<String, Object>> acceptEvent(
+            @PathVariable UUID userId,
+            @PathVariable UUID eventId
+    ) {
+        eventService.acceptEvent(userId, eventId);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Event accepted");
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/api/event/{id}")
-    public ResponseEntity<Map<String, Object>> rejectEvent(@PathVariable Long id) {
-        EventDTO event = eventService.getEventById(id);
+    /**
+     * {@code DELETE /event/{id}} : Reject event OR Remove event
+     * @param userId ID of the user
+     * @param eventId ID of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and a message that the event was rejected or removed,
+     * or with status {@code 404 (Not Found)} if the event does not exist,
+     *
+     */
+    @DeleteMapping("/event/reject/{userId}/{eventId}")
+    public ResponseEntity<Map<String, Object>> rejectEvent(
+            @PathVariable UUID userId,
+            @PathVariable UUID eventId
+    ) {
+        EventRequestDTO eventRequest = eventService.getEventRequestByUserIdAndEventId(userId, eventId);
         Map<String, Object> response = new HashMap<>();
-        if (event.isPending()) {
-            response.put("message", "Event rejected");
-        }
-        else {
-            response.put("message", "Event removed");
-        }
+
+        // If event is pending, then it is rejected
+        if (eventRequest.isPending()) response.put("message", "Event rejected");
+        // If it was accepted before, then it is removed
+        else response.put("message", "Event removed");
+
+        eventService.deleteEventRequest(userId, eventId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * {@code DELETE /event/{id}} : Delete event
+     * @param id ID of the event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and a message that the event was deleted,
+     * or with status {@code 404 (Not Found)} if the event does not exist
+     */
+    @DeleteMapping("/event/{id}")
+    public ResponseEntity<Map<String, Object>> deleteEvent(@PathVariable UUID id) {
         eventService.deleteEvent(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Event deleted");
         return ResponseEntity.ok(response);
     }
 }
