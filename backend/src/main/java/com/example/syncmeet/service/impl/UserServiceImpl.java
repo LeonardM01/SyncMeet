@@ -1,7 +1,7 @@
 package com.example.syncmeet.service.impl;
 
-import com.example.syncmeet.dto.FriendRequestDTO;
-import com.example.syncmeet.dto.UserDTO;
+import com.example.syncmeet.dto.friendRequest.FriendRequestDTO;
+import com.example.syncmeet.dto.user.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
 import com.example.syncmeet.error.exception.IdMismatchException;
 

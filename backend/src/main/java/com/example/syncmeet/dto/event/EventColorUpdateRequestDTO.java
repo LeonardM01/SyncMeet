@@ -1,4 +1,4 @@
-package com.example.syncmeet.dto;
+package com.example.syncmeet.dto.event;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

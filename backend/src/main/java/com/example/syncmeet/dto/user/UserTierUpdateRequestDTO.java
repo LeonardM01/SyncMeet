@@ -1,4 +1,4 @@
-package com.example.syncmeet.dto;
+package com.example.syncmeet.dto.user;
 
 import com.example.syncmeet.model.User.TierType;
 import jakarta.validation.constraints.NotNull;

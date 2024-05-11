@@ -1,7 +1,7 @@
 package com.example.syncmeet.service;
 
-import com.example.syncmeet.dto.EventDTO;
-import com.example.syncmeet.dto.EventRequestDTO;
+import com.example.syncmeet.dto.event.EventDTO;
+import com.example.syncmeet.dto.event.EventRequestDTO;
 import com.example.syncmeet.model.Event;
 import com.example.syncmeet.model.EventRequest;
 
