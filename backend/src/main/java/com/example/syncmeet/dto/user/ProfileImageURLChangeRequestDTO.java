@@ -1,4 +1,4 @@
-package com.example.syncmeet.dto;
+package com.example.syncmeet.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

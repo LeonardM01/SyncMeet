@@ -1,4 +1,4 @@
-package com.example.syncmeet.dto;
+package com.example.syncmeet.dto.user;
 
 import com.example.syncmeet.model.User;
 import jakarta.validation.constraints.Email;

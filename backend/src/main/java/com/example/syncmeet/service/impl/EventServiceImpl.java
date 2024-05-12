@@ -1,8 +1,8 @@
 package com.example.syncmeet.service.impl;
 
-import com.example.syncmeet.dto.EventDTO;
-import com.example.syncmeet.dto.EventRequestDTO;
-import com.example.syncmeet.dto.UserDTO;
+import com.example.syncmeet.dto.event.EventDTO;
+import com.example.syncmeet.dto.event.EventRequestDTO;
+import com.example.syncmeet.dto.user.UserDTO;
 import com.example.syncmeet.error.exception.EntityNotFoundException;
 import com.example.syncmeet.error.exception.RequestException;
 

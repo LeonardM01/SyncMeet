@@ -1,6 +1,6 @@
 package com.example.syncmeet.controller;
 
-import com.example.syncmeet.dto.*;
+import com.example.syncmeet.dto.event.*;
 import com.example.syncmeet.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
