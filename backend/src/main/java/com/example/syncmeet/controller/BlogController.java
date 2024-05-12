@@ -35,8 +35,6 @@ public class BlogController {
         BlogDTO blog = new BlogDTO();
         blog.setTitle(blogDTO.getTitle());
         blog.setBody(blogDTO.getBody());
-        blog.setCreatedAt(blogDTO.getCreatedAt());
-        blog.setUpdatedAt(null);
         blog.setType(blogDTO.getType());
 
         return ResponseEntity.ok(blogService.createBlogPost(blog, authorId));
@@ -82,7 +80,7 @@ public class BlogController {
         BlogDTO blog = blogService.getBlogById(blogId);
         blog.setTitle(updated.getNewTitle());
         blog.setBody(updated.getNewBody());
-        blog.setUpdatedAt(updated.getUpdatedAt());
+        blog.setType(updated.getNewType());
 
         return ResponseEntity.ok(blogService.updateBlogPost(blog, blogId));
     }

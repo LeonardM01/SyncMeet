@@ -19,8 +19,5 @@ public class BlogCreationRequestDTO {
 
     private String body;
 
-    @NotNull(message = "Creation date of Blog post is required")
-    private LocalDateTime createdAt;
-
     private String type;
 }
