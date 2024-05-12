@@ -1,17 +1,21 @@
 package com.example.syncmeet.service;
 
-import com.example.syncmeet.dto.CommentDTO;
+import com.example.syncmeet.dto.comment.CommentDTO;
 import com.example.syncmeet.model.Comment;
+
+import java.util.UUID;
 
 public interface CommentService {
 
     CommentDTO commentToDTO(Comment comment);
 
-    Comment commentDTOToEntity(CommentDTO commentDTO);
+    Comment commentToEntity(CommentDTO commentDTO);
 
-    CommentDTO getCommentById(Long id);
+    CommentDTO getCommentById(UUID id);
 
-    CommentDTO createComment(CommentDTO commentDTO);
+    CommentDTO createComment(CommentDTO comment, UUID userId, UUID eventId);
 
-    void deleteComment(Long id);
+    CommentDTO updateComment(CommentDTO comment, UUID id);
+
+    void deleteComment(UUID id);
 }

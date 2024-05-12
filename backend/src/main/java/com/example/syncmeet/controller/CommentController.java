@@ -1,6 +1,9 @@
 package com.example.syncmeet.controller;
 
-import com.example.syncmeet.dto.CommentDTO;
+import com.example.syncmeet.dto.blog.BlogDTO;
+import com.example.syncmeet.dto.comment.CommentCreationRequestDTO;
+import com.example.syncmeet.dto.comment.CommentDTO;
+import com.example.syncmeet.dto.comment.CommentUpdateRequestDTO;
 import com.example.syncmeet.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
+@RequestMapping("/api")
 public class CommentController {
 
     private final CommentService commentService;
@@ -20,21 +25,31 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/api/comment")
-    public ResponseEntity<Map<String, Object>> createComment(@Valid @RequestBody CommentDTO comment) {
-        commentService.createComment(comment);
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Comment Created successfully");
-        return ResponseEntity.ok(response);
+    @PostMapping("/comment/create")
+    public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentCreationRequestDTO comment)
+    {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setContent(comment.getContent());
+
+        return ResponseEntity.ok(commentService.createComment(commentDTO, comment.getUserId(), comment.getEventId()));
     }
 
-    @GetMapping("/api/comment/{id}")
-    public ResponseEntity<CommentDTO> getCommentById(@PathVariable Long id) {
+    @GetMapping("/comment/get/{id}")
+    public ResponseEntity<CommentDTO> getCommentById(@PathVariable UUID id) {
         return ResponseEntity.ok(commentService.getCommentById(id));
     }
 
-    @DeleteMapping("/api/comment/{id}")
-    public ResponseEntity<Map<String, Object>> deleteComment(@PathVariable Long id) {
+    @PutMapping("/comment/update/{id}")
+    public ResponseEntity<CommentDTO> updateComment(@Valid @RequestBody CommentUpdateRequestDTO updatedComment , @PathVariable UUID id) {
+
+        CommentDTO comment = commentService.getCommentById(id);
+        comment.setContent(updatedComment.getNewContent());
+
+        return ResponseEntity.ok(commentService.updateComment(comment, id));
+    }
+
+    @DeleteMapping("/comment/delete/{id}")
+    public ResponseEntity<Map<String, Object>> deleteComment(@PathVariable UUID id) {
         CommentDTO comment = commentService.getCommentById(id);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Comment removed");
