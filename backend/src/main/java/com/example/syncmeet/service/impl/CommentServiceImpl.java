@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,27 +31,33 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDTO commentToDTO(Comment comment) {
+    public CommentDTO toDTO(Comment comment) {
         return modelMapper.map(comment, CommentDTO.class);
     }
 
     @Override
-    public Comment commentToEntity(CommentDTO commentDTO) {
+    public Comment toEntity(CommentDTO commentDTO) {
         return modelMapper.map(commentDTO, Comment.class);
     }
 
     @Override
     public CommentDTO getCommentById(UUID id) {
         return commentRepository.findById(id)
-                .map(this::commentToDTO).orElseThrow(() -> new EntityNotFoundException("Couldn't find comment"));
+                .map(this::toDTO).orElseThrow(() -> new EntityNotFoundException("Couldn't find comment"));
+    }
+
+    @Override
+    public List<CommentDTO> getCommentsByUserId(UUID userId) {
+        return commentRepository.findByUserId(userId).stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     @Override
     public CommentDTO createComment(CommentDTO comment, UUID userId, UUID eventId) {
-
         comment.setUser(userService.getUserById(userId));
         comment.setEvent(eventService.getEventById(eventId));
-        return commentToDTO(commentRepository.save(commentToEntity(comment)));
+        return toDTO(commentRepository.save(toEntity(comment)));
     }
 
     @Override
@@ -59,8 +66,25 @@ public class CommentServiceImpl implements CommentService {
             throw new EntityNotFoundException("Comment not found");
         }
 
-        return commentToDTO(commentRepository.save(commentToEntity(comment)));
+        return toDTO(commentRepository.save(toEntity(comment)));
     }
+
+    @Override
+    public CommentDTO replyToComment(CommentDTO comment, UUID userId, UUID parentId) {
+        CommentDTO parentComment = getCommentById(parentId);
+
+        comment.setReplyingComment(parentComment);
+        comment.setUser(userService.getUserById(userId));
+        comment.setEvent(parentComment.getEvent());
+
+        parentComment.getReplies().add(comment);
+
+        commentRepository.save(toEntity(comment));
+        commentRepository.save(toEntity(parentComment));
+
+        return parentComment;
+    }
+
 
     @Override
     public void deleteComment(UUID id) {
