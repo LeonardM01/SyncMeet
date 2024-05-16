@@ -10,10 +10,12 @@ import com.example.syncmeet.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
+@Transactional
 @Service
 public class CommentServiceImpl implements CommentService {
 
@@ -79,7 +81,6 @@ public class CommentServiceImpl implements CommentService {
 
         parentComment.getReplies().add(comment);
 
-        commentRepository.save(toEntity(comment));
         commentRepository.save(toEntity(parentComment));
 
         return parentComment;
@@ -88,11 +89,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(UUID id) {
-        if (!commentRepository.existsById(id)) {
-            throw new EntityNotFoundException("Comment not found");
+        CommentDTO comment = getCommentById(id);
+
+        if (comment.getReplyingComment() != null) {
+            CommentDTO parentComment = comment.getReplyingComment();
+            parentComment.getReplies().remove(comment);
+            updateComment(parentComment, parentComment.getId());
         }
 
         commentRepository.deleteById(id);
     }
-
 }
