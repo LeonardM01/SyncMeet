@@ -1,11 +1,15 @@
-package com.example.syncmeet.dto;
+package com.example.syncmeet.dto.friendRequest;
 
+import com.example.syncmeet.dto.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * DTO for the {@link com.example.syncmeet.model.FriendRequest} entity
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

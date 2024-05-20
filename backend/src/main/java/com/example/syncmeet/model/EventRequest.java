@@ -6,12 +6,12 @@ import lombok.Data;
 import java.util.UUID;
 
 /**
- * Friend request entity
+ * Event request entity
  */
 @Entity
-@Table(name = "friend_requests")
+@Table(name = "event_requests")
 @Data
-public class FriendRequest {
+public class EventRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -21,9 +21,9 @@ public class FriendRequest {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "friend_id")
-    private User friend;
+    @JoinColumn(name = "event_id")
+    private Event event;
 
-    @Column(name = "pending_request")
-    private boolean pendingRequest;
+    @Column(name = "pending")
+    private boolean pending;
 }

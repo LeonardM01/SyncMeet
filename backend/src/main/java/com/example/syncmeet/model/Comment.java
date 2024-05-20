@@ -6,40 +6,37 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
-/**
- * Event entity
- */
 @Entity
-@Table(name = "event")
+@Table(name = "comment")
 @Data
-public class Event {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "start_date_time")
-    private LocalDateTime startDateTime;
+    @Column(name = "content")
+    private String content;
 
-    @Column(name = "end_date_time")
-    private LocalDateTime endDateTime;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "name")
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
-    @Column(name = "description")
-    private String description;
+    @ManyToOne
+    @JoinColumn(name = "replying_comment_id")
+    private Comment replyingComment;
 
-    @Column(name = "color")
-    private String color;
-
-    @Column(name = "visible")
-    private boolean visible;
-
-    @Column(name = "recurring")
-    private boolean recurring;
+    @OneToMany(mappedBy = "replyingComment", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OrderBy("createdAt ASC")
+    private Set<Comment> replies;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -49,26 +46,20 @@ public class Event {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
 
     /**
-     *
      * For excluding the bidirectional relationship
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Event event = (Event) o;
-        return id.equals(event.id);
+        Comment comment = (Comment) o;
+        return Objects.equals(id, comment.id);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return id != null ? id.hashCode() : 0;
     }
-
-
 }

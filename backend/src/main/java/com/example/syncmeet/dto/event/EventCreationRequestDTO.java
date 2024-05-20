@@ -1,4 +1,4 @@
-package com.example.syncmeet.dto;
+package com.example.syncmeet.dto.event;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,15 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventDTO {
-
-    private UUID id;
+public class EventCreationRequestDTO {
 
     @NotNull(message = "Start date for event is required")
     private LocalDateTime startDateTime;
@@ -36,8 +32,4 @@ public class EventDTO {
 
     @NotNull(message = "The recurrence of the event is required")
     private boolean recurring;
-
-    private boolean pending;
-
-    private Set<UserDTO> users;
 }
