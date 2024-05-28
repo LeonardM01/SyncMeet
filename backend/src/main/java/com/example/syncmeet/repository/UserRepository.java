@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT er.user FROM EventRequest er WHERE er.event.id = :eventId AND er.pending = false")
     List<User> findByEventIdAndPendingFalse(@Param("eventId") UUID eventId);
+
+    @Query("SELECT er.user FROM EventRequest er WHERE similarity(er.event.name, :name) > 0.1 AND er.pending = false")
+    List<User> findByEventNameFuzzy(@Param(("name")) String name);
 }

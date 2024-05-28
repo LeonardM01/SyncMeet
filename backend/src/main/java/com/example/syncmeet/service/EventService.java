@@ -135,6 +135,13 @@ public interface EventService {
     List<EventDTO> getActiveEventsByUser(UUID id);
 
     /**
+     * Get event with recommended start and end time based on its name
+     * @param eventName the name of the event
+     * @return the recommended event
+     */
+    EventDTO getRecommendedEvent(String eventName);
+
+    /**
      * Create an event request
      *
      * @param userId  the id of the user

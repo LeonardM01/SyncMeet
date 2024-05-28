@@ -22,10 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -176,6 +175,123 @@ public class EventServiceImpl implements EventService {
     public List<EventDTO> getActiveEventsByUser(UUID id) {
         return eventRepository.findByUserIdAndPendingFalse(id)
                 .stream().map(this::eventToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public EventDTO getRecommendedEvent(String eventName) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfWeek = now.with(DayOfWeek.MONDAY).withHour(10).withMinute(0);
+        LocalDateTime endOfWeek = startOfWeek.plusWeeks(1).minusHours(1);
+
+        LocalDateTime startOfFirstPriorWeek = startOfWeek.minusWeeks(1);
+        LocalDateTime startOfSecondPriorWeek = startOfFirstPriorWeek.minusWeeks(1);
+        LocalDateTime startOfThirdPriorWeek = startOfSecondPriorWeek.minusWeeks(1);
+
+        List<EventDTO> activeWeekEvents = eventRepository.findByNameFuzzyAndDateTimeBetween(eventName, startOfWeek, endOfWeek)
+                .stream().map(this::eventToDTO).toList();
+        List<EventDTO> firstPriorWeekEvents = eventRepository.findByNameFuzzyAndDateTimeBetween(eventName, startOfFirstPriorWeek, startOfWeek.minusHours(1))
+                .stream().map(this::eventToDTO).toList();
+        List<EventDTO> secondPriorWeekEvents = eventRepository.findByNameFuzzyAndDateTimeBetween(eventName, startOfSecondPriorWeek, startOfFirstPriorWeek.minusHours(1))
+                .stream().map(this::eventToDTO).toList();
+        List<EventDTO> thirdPriorWeekEvents = eventRepository.findByNameFuzzyAndDateTimeBetween(eventName, startOfThirdPriorWeek, startOfSecondPriorWeek.minusHours(1))
+                .stream().map(this::eventToDTO).toList();
+
+        return calculateRecommendedEvent(activeWeekEvents, firstPriorWeekEvents, secondPriorWeekEvents, thirdPriorWeekEvents, eventName);
+    }
+
+    private EventDTO calculateRecommendedEvent(List<EventDTO> activeWeek, List<EventDTO> firstPriorWeek, List<EventDTO> secondPriorWeek, List<EventDTO> thirdPriorWeek, String eventName) {
+        Map<Integer, Double> activeWeekFrequencies = initializeFrequencyMap();
+        Map<Integer, Double> firstPriorWeekFrequencies = initializeFrequencyMap();
+        Map<Integer, Double> secondPriorWeekFrequencies = initializeFrequencyMap();
+        Map<Integer, Double> thirdPriorWeekFrequencies = initializeFrequencyMap();
+
+        populateFrequencyMap(activeWeek, activeWeekFrequencies);
+        populateFrequencyMap(firstPriorWeek, firstPriorWeekFrequencies);
+        populateFrequencyMap(secondPriorWeek, secondPriorWeekFrequencies);
+        populateFrequencyMap(thirdPriorWeek, thirdPriorWeekFrequencies);
+
+        updateFrequencyTables(activeWeekFrequencies, firstPriorWeekFrequencies, secondPriorWeekFrequencies, thirdPriorWeekFrequencies);
+
+        List<UserDTO> users = userRepository.findByEventNameFuzzy(eventName)
+                .stream().map(userService::userToDTO).toList();
+        Map<Integer, Double> finalFrequencyMap = calculateFinalRelativeFrequencies(users, activeWeekFrequencies);
+
+        int bestHour = selectBestHour(finalFrequencyMap);
+
+        LocalDateTime recommendedDateTime = LocalDateTime.now().withHour(bestHour).withMinute(0);
+        EventDTO recommendedEvent = new EventDTO();
+        recommendedEvent.setName(eventName);
+        recommendedEvent.setStartDateTime(recommendedDateTime);
+        recommendedEvent.setEndDateTime(recommendedDateTime.plusHours(1));
+
+        return recommendedEvent;
+    }
+
+    private Map<Integer, Double> initializeFrequencyMap() {
+        Map<Integer, Double> frequencyMap = new HashMap<>();
+        for (int i = 10; i <= 22; ++i) {
+            frequencyMap.put(i, 0.0);
+        }
+        return frequencyMap;
+    }
+
+    private void populateFrequencyMap(List<EventDTO> events, Map<Integer, Double> frequencyMap) {
+        for (EventDTO event : events) {
+            int hour = event.getStartDateTime().getHour();
+            if (hour >= 10 && hour <= 22) {
+                frequencyMap.put(hour, frequencyMap.get(hour) + 1);
+            }
+        }
+    }
+
+    // Shift the frequency tables by one week and adjust the active week frequencies
+    private void updateFrequencyTables(Map<Integer, Double> activeWeek, Map<Integer, Double> firstPriorWeek, Map<Integer, Double> secondPriorWeek, Map<Integer, Double> thirdPriorWeek) {
+        for (int hour = 10; hour <= 22; ++hour) {
+            activeWeek.put(hour, activeWeek.get(hour) - thirdPriorWeek.get(hour) + firstPriorWeek.get(hour));
+            thirdPriorWeek.put(hour, secondPriorWeek.get(hour));
+            secondPriorWeek.put(hour, firstPriorWeek.get(hour));
+            firstPriorWeek.put(hour, activeWeek.get(hour));
+        }
+    }
+
+    private Map<Integer, Double> calculateFinalRelativeFrequencies(List<UserDTO> users, Map<Integer, Double> activeWeekFrequencies) {
+        Map<Integer, Double> finalFrequencyMap = initializeFrequencyMap();
+
+        for (UserDTO user : users) {
+            Map<Integer, Double> userFrequencyMap = initializeFrequencyMap();
+
+            // Populate the frequency maps for each user that belongs to each event
+            for (EventDTO event : getEventsByUser(user.getId())) {
+                int hour = event.getStartDateTime().getHour();
+                if (hour >= 10 && hour <= 22) {
+                    userFrequencyMap.put(hour, userFrequencyMap.get(hour) + 1);
+                }
+            }
+
+            // Calculate relative frequencies for each hour
+            for (int hour = 10; hour <= 22; ++hour) {
+                finalFrequencyMap.put(hour, finalFrequencyMap.get(hour) + (userFrequencyMap.get(hour) / activeWeekFrequencies.get(hour)));
+            }
+        }
+
+        // Calculate the mean relative frequency for each hour
+        for (int hour = 10; hour <= 22; ++hour) {
+            finalFrequencyMap.put(hour, finalFrequencyMap.get(hour) / users.size());
+        }
+
+        return finalFrequencyMap;
+    }
+
+    private int selectBestHour(Map<Integer, Double> finalFrequencyMap) {
+        int bestHour = 10;
+        double highestMean = finalFrequencyMap.get(10);
+        for (int hour = 11; hour <= 22; ++hour) {
+            if (finalFrequencyMap.get(hour) > highestMean) {
+                highestMean = finalFrequencyMap.get(hour);
+                bestHour = hour;
+            }
+        }
+        return bestHour;
     }
 
     @Override

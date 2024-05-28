@@ -16,6 +16,9 @@ import java.util.UUID;
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
+    @Query("SELECT e FROM Event e WHERE similarity(e.name, :name) > 0.1 AND e.startDateTime BETWEEN :start AND :end")
+    List<Event> findByNameFuzzyAndDateTimeBetween(@Param("name") String name, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     List<Event> findByOwnerId(UUID ownerId);
 
     @Query("SELECT e FROM Event e JOIN EventRequest er ON e.id = er.event.id WHERE e.owner.id = :ownerId AND er.pending = true")

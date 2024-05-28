@@ -67,6 +67,20 @@ public class EventController {
     }
 
     /**
+     * {@code GET /event/recommended} : Fetch recommended event
+     *
+     * @param recommendedEventGenerationRequest the request to generate a recommended event
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the recommended event as {@link EventDTO},
+     * or with status {@code 400 (Bad Request)} if the provided event name in null
+     */
+    @GetMapping("/event/recommended")
+    public ResponseEntity<EventDTO> getRecommendedEvent(
+            @RequestBody RecommendedEventGenerationRequestDTO recommendedEventGenerationRequest
+    ) {
+        return ResponseEntity.ok(eventService.getRecommendedEvent(recommendedEventGenerationRequest.getName()));
+    }
+
+    /**
      * {@code GET /event/pending/owner/{id}} : Fetch all pending events where a user is the owner
      *
      * @param id ID of the user
