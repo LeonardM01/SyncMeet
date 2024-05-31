@@ -25,5 +25,7 @@ public class BlogDTO {
 
     private LocalDateTime updatedAt;
 
-    private String type;
+    private String tag;
+
+    private String imageUrl;
 }

@@ -35,6 +35,9 @@ public class Blog {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(name = "type")
-    private String type;
+    @Column(name = "tag")
+    private String tag;
+
+    @Column(name = "image")
+    private String imageUrl;
 }

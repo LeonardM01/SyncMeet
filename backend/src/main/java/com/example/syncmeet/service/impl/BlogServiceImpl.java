@@ -5,7 +5,6 @@ import com.example.syncmeet.error.exception.EntityNotFoundException;
 import com.example.syncmeet.error.exception.InvalidDateOrderException;
 import com.example.syncmeet.model.Blog;
 import com.example.syncmeet.repository.BlogRepository;
-import com.example.syncmeet.repository.UserRepository;
 import com.example.syncmeet.service.BlogService;
 import com.example.syncmeet.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -23,14 +22,12 @@ import java.util.stream.Collectors;
 public class BlogServiceImpl implements BlogService {
 
     private final BlogRepository blogRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public BlogServiceImpl(BlogRepository blogRepository, UserRepository userRepository, UserService userService, ModelMapper modelMapper) {
+    public BlogServiceImpl(BlogRepository blogRepository, UserService userService, ModelMapper modelMapper) {
         this.blogRepository = blogRepository;
-        this.userRepository = userRepository;
         this.userService = userService;
         this.modelMapper = modelMapper;
     }
@@ -58,8 +55,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public List<BlogDTO> getBlogByType(String type) {
-        return blogRepository.findByType(type)
+    public List<BlogDTO> getBlogByTag(String tag) {
+        return blogRepository.findByTag(tag)
                 .stream().map(this::blogToDTO).collect(Collectors.toList());
     }
 
