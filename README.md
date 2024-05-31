@@ -13,3 +13,5 @@ Push to a new branch (`feat/<ime>` ili `fix/<ime>`), otvorite PR (Pull request) 
 
 - Run the Spring Boot server
 - Go to http://localhost:8080/swagger-ui/api-docs.html to view the API endpoints
+Or
+- Go to http://api.syncmeet.space/swagger-ui/swagger-ui/index.html, the URL hosted on AWS server
