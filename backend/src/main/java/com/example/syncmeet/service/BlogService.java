@@ -19,7 +19,7 @@ public interface BlogService {
 
     List<BlogDTO> getBlogByAuthor(UUID authorId);
 
-    List<BlogDTO> getBlogByType(String type);
+    List<BlogDTO> getBlogByTag(String tag);
 
     List<BlogDTO> getBlogBetweenCreationTime(LocalDateTime startDate, LocalDateTime endDate);
 

@@ -55,8 +55,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public List<BlogDTO> getBlogByType(String type) {
-        return blogRepository.findByType(type)
+    public List<BlogDTO> getBlogByTag(String tag) {
+        return blogRepository.findByTag(tag)
                 .stream().map(this::blogToDTO).collect(Collectors.toList());
     }
 
