@@ -51,9 +51,9 @@ public class BlogController {
         return ResponseEntity.ok(blogService.getBlogByAuthor(authorId));
     }
 
-    @GetMapping("blog/type")
-    public ResponseEntity<List<BlogDTO>> getBlogByType(String type) {
-        return ResponseEntity.ok(blogService.getBlogByType(type));
+    @GetMapping("blog/tag")
+    public ResponseEntity<List<BlogDTO>> getBlogByTag(String tag) {
+        return ResponseEntity.ok(blogService.getBlogByTag(tag));
     }
 
     @GetMapping("blog/filterDates")
