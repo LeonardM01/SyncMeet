@@ -1,12 +1,9 @@
 package com.example.syncmeet.dto.blog;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +16,7 @@ public class BlogCreationRequestDTO {
 
     private String body;
 
-    private String type;
+    private String tag;
+
+    private String imageUrl;
 }
