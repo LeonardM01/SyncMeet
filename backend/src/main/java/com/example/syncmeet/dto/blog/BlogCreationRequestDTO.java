@@ -17,6 +17,4 @@ public class BlogCreationRequestDTO {
     private String body;
 
     private String tag;
-
-    private String imageUrl;
 }

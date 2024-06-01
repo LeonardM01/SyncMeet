@@ -12,11 +12,13 @@ import com.example.syncmeet.model.User;
 import com.example.syncmeet.repository.EventRepository;
 import com.example.syncmeet.repository.FriendRequestRepository;
 import com.example.syncmeet.repository.UserRepository;
+import com.example.syncmeet.service.S3Service;
 import com.example.syncmeet.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.Objects;
@@ -34,13 +36,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final EventRepository eventRepository;
+    private final S3Service s3Service;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, FriendRequestRepository friendRequestRepository, EventRepository eventRepository, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, FriendRequestRepository friendRequestRepository, EventRepository eventRepository, S3Service s3Service, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.friendRequestRepository = friendRequestRepository;
         this.eventRepository = eventRepository;
+        this.s3Service = s3Service;
         this.modelMapper = modelMapper;
     }
 
@@ -141,7 +145,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO createUser(UserDTO user) {
+    public UserDTO createUser(UserDTO user, MultipartFile image) {
+        if (image.isEmpty() && user.getProfileImageUrl() == null) {
+            user.setProfileImageUrl(null);
+        }
+        else if (!Objects.requireNonNull(image.getContentType()).startsWith("image/")) {
+            throw new IllegalArgumentException("File must be an image");
+        }
+        else if (!image.isEmpty()) {
+            String imageUrl = s3Service.uploadFile(image);
+            user.setProfileImageUrl(imageUrl);
+        }
+
         return userToDTO(userRepository.save(userDTOToEntity(user)));
     }
 
@@ -155,7 +170,31 @@ public class UserServiceImpl implements UserService {
             throw new IdMismatchException("ID's don't match");
         }
 
-        return createUser(user);
+        return userToDTO(userRepository.save(userDTOToEntity(user)));
+    }
+
+    @Override
+    public UserDTO changeProfileImageUrl(MultipartFile image, UUID id) {
+        UserDTO user = getUserById(id);
+
+        if (image.isEmpty()) {
+            user.setProfileImageUrl(null);
+
+            return updateUser(user, id);
+        }
+        else if (!Objects.requireNonNull(image.getContentType()).startsWith("image/")) {
+            throw new IllegalArgumentException("File must be an image");
+        }
+
+        String imageUrl = s3Service.uploadFile(image);
+
+        if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().contains("googleusercontent.com")) {
+            s3Service.removeImage(user.getProfileImageUrl());
+        }
+
+        user.setProfileImageUrl(imageUrl);
+
+        return updateUser(user, id);
     }
 
     @Override
