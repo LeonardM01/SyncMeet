@@ -4,6 +4,7 @@ import com.example.syncmeet.dto.friendRequest.FriendRequestDTO;
 import com.example.syncmeet.dto.user.UserDTO;
 import com.example.syncmeet.model.FriendRequest;
 import com.example.syncmeet.model.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -118,9 +119,10 @@ public interface UserService {
      * Create user
      *
      * @param userDTO The entity to create
+     * @param image The image to set as profile image
      * @return The persisted entity as {@link UserDTO}
      */
-    UserDTO createUser(UserDTO userDTO);
+    UserDTO createUser(UserDTO userDTO, MultipartFile image);
 
     /**
      * Update user
@@ -130,6 +132,15 @@ public interface UserService {
      * @return The persisted entity as {@link UserDTO}
      */
     UserDTO updateUser(UserDTO user, UUID id);
+
+    /**
+     * Change profile image of user
+     *
+     * @param image The image to set as profile image
+     * @param id ID of the user to change profile image
+     * @return The updated user as {@link UserDTO}
+     */
+    UserDTO changeProfileImageUrl(MultipartFile image, UUID id);
 
     /**
      * Delete user

@@ -2,6 +2,7 @@ package com.example.syncmeet.error;
 
 import com.example.syncmeet.error.exception.*;
 
+import io.awspring.cloud.s3.S3Exception;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,9 @@ public class GlobalExceptionHandler {
             IdMismatchException.class,
             UserEventMembershipException.class,
             InvalidDateOrderException.class,
-            RequestException.class
+            RequestException.class,
+            IllegalArgumentException.class,
+            S3Exception.class
     })
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         Map<String, Object> response = new HashMap<>();
