@@ -52,25 +52,4 @@
     .small {
         @apply text-[8px] font-normal leading-[120%];
     }
-    
-    @keyframes expandBackground {
-        0% {
-            transform: translateY(0);
-        }
-        100% {
-            transform: translateY(240px);
-        }
-    }
-    
-    .section-2 {
-        @apply bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out;
-    }
-    
-    .section-2-expanded {
-        background-image: url('/assets/blog/images/background_expanded.svg');
-        transform: translateY(240px);
-        position: relative; 
-        animation: expandBackground 0.6s ease-in-out forwards;
-    }
-    
 }
