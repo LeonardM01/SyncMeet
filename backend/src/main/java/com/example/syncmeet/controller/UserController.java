@@ -7,11 +7,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * REST controller for managing {@link com.example.syncmeet.model.User} and {@link com.example.syncmeet.model.FriendRequest}
@@ -107,11 +105,14 @@ public class UserController {
      * {@code POST /users} : Sign up
      *
      * @param userSignUpRequest Sign up request with necessary credentials as {@link UserSignUpRequestDTO}
-     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and a confirmation message in the body,
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and created user as {@link UserDTO} in the body,
      * or with status {@code 400 (Bad Request)} if the request is invalid
      */
     @PostMapping("/users")
-    public ResponseEntity<Map<String, Object>> signUp(@Valid @RequestBody UserSignUpRequestDTO userSignUpRequest) {
+    public ResponseEntity<UserDTO> signUp(
+            @Valid @RequestBody UserSignUpRequestDTO userSignUpRequest,
+            @RequestBody MultipartFile image
+            ) {
         UserDTO user = new UserDTO(
                 null,
                 userSignUpRequest.getUsername(),
@@ -119,10 +120,8 @@ public class UserController {
                 userSignUpRequest.getProfileImageUrl(),
                 userSignUpRequest.getTier()
                 );
-        userService.createUser(user);
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Signed up successfully");
-        return ResponseEntity.ok(response);
+
+        return ResponseEntity.ok(userService.createUser(user, image));
     }
 
     /**
@@ -167,19 +166,17 @@ public class UserController {
      * {@code PUT /users/profileImage/{id}} : Change profile image
      *
      * @param id ID of the specified user
-     * @param profileImageURLChangeRequest Request with the new profile image URL as {@link ProfileImageURLChangeRequestDTO}
+     * @param image Image file to be uploaded
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and updated user as {@link UserDTO} in the body,
-     * or with status {@code 404 (Not found)} if the user does not exist,
-     * or with status {@code 400 (Bad request} if the request is invalid
+     * or with status {@code 400 (Bad request)} if the provided file is not an image,
+     * or with status {@code 404 (Not found)} if the user does not exist
      */
     @PutMapping("/users/profileImage/{id}")
     public ResponseEntity<UserDTO> changeProfileImage(
             @PathVariable UUID id,
-            @Valid @RequestBody ProfileImageURLChangeRequestDTO profileImageURLChangeRequest
+            @RequestBody MultipartFile image
             ) {
-        UserDTO user = userService.getUserById(id);
-        user.setProfileImageUrl(profileImageURLChangeRequest.getProfileImageUrl());
-        return ResponseEntity.ok(userService.updateUser(user, id));
+        return ResponseEntity.ok(userService.changeProfileImageUrl(image, id));
     }
 
     /**

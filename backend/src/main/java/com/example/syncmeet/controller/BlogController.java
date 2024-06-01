@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -30,15 +31,16 @@ public class BlogController {
     @PostMapping("blog/{authorId}")
     public ResponseEntity<BlogDTO> createBlogPost(
             @Valid @RequestBody BlogCreationRequestDTO blogDTO,
-            @PathVariable UUID authorId)
+            @PathVariable UUID authorId,
+            @RequestBody MultipartFile image
+    )
     {
         BlogDTO blog = new BlogDTO();
         blog.setTitle(blogDTO.getTitle());
         blog.setBody(blogDTO.getBody());
         blog.setTag(blogDTO.getTag());
-        blog.setImageUrl(blogDTO.getImageUrl());
 
-        return ResponseEntity.ok(blogService.createBlogPost(blog, authorId));
+        return ResponseEntity.ok(blogService.createBlogPost(blog, authorId, image));
     }
 
     @GetMapping("blog/get/{blogId}")
@@ -84,6 +86,15 @@ public class BlogController {
         blog.setTag(updated.getNewTag());
 
         return ResponseEntity.ok(blogService.updateBlogPost(blog, blogId));
+    }
+
+    @PutMapping("blog/changeImage/{blogId}")
+    public ResponseEntity<BlogDTO> changeBlogPostImage(
+            @PathVariable UUID blogId,
+            @RequestBody MultipartFile image
+    )
+    {
+        return ResponseEntity.ok(blogService.changeBlogPostImage(blogId, image));
     }
 
     @DeleteMapping("blog/delete/{id}")
