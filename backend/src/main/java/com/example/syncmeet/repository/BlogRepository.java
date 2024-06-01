@@ -15,5 +15,5 @@ public interface BlogRepository extends JpaRepository<Blog, UUID> {
 
     List<Blog> findBlogByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-    List<Blog> findByType(String type);
+    List<Blog> findByTag(String tag);
 }

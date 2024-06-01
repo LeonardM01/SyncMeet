@@ -13,5 +13,7 @@ public class BlogUpdateRequestDTO {
 
     private String newBody;
 
-    private String newType;
+    private String newTag;
+
+    private String newImageUrl;
 }

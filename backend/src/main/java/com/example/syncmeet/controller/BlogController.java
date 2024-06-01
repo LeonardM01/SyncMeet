@@ -35,7 +35,8 @@ public class BlogController {
         BlogDTO blog = new BlogDTO();
         blog.setTitle(blogDTO.getTitle());
         blog.setBody(blogDTO.getBody());
-        blog.setType(blogDTO.getType());
+        blog.setTag(blogDTO.getTag());
+        blog.setImageUrl(blogDTO.getImageUrl());
 
         return ResponseEntity.ok(blogService.createBlogPost(blog, authorId));
     }
@@ -50,9 +51,9 @@ public class BlogController {
         return ResponseEntity.ok(blogService.getBlogByAuthor(authorId));
     }
 
-    @GetMapping("blog/type")
-    public ResponseEntity<List<BlogDTO>> getBlogByType(String type) {
-        return ResponseEntity.ok(blogService.getBlogByType(type));
+    @GetMapping("blog/tag")
+    public ResponseEntity<List<BlogDTO>> getBlogByTag(String tag) {
+        return ResponseEntity.ok(blogService.getBlogByTag(tag));
     }
 
     @GetMapping("blog/filterDates")
@@ -80,7 +81,7 @@ public class BlogController {
         BlogDTO blog = blogService.getBlogById(blogId);
         blog.setTitle(updated.getNewTitle());
         blog.setBody(updated.getNewBody());
-        blog.setType(updated.getNewType());
+        blog.setTag(updated.getNewTag());
 
         return ResponseEntity.ok(blogService.updateBlogPost(blog, blogId));
     }
