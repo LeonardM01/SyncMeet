@@ -6,14 +6,17 @@ import com.example.syncmeet.error.exception.InvalidDateOrderException;
 import com.example.syncmeet.model.Blog;
 import com.example.syncmeet.repository.BlogRepository;
 import com.example.syncmeet.service.BlogService;
+import com.example.syncmeet.service.S3Service;
 import com.example.syncmeet.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -23,12 +26,14 @@ public class BlogServiceImpl implements BlogService {
 
     private final BlogRepository blogRepository;
     private final UserService userService;
+    private final S3Service s3Service;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public BlogServiceImpl(BlogRepository blogRepository, UserService userService, ModelMapper modelMapper) {
+    public BlogServiceImpl(BlogRepository blogRepository, UserService userService, S3Service s3Service, ModelMapper modelMapper) {
         this.blogRepository = blogRepository;
         this.userService = userService;
+        this.s3Service = s3Service;
         this.modelMapper = modelMapper;
     }
 
@@ -69,7 +74,18 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogDTO createBlogPost(BlogDTO blog, UUID authorId) {
+    public BlogDTO createBlogPost(BlogDTO blog, UUID authorId, MultipartFile image) {
+        if (image.isEmpty()) {
+            blog.setImageUrl(null);
+        }
+        else if (!Objects.requireNonNull(image.getContentType()).startsWith("image/")) {
+            throw new IllegalArgumentException("File must be an image");
+        }
+        else {
+            String imageUrl = s3Service.uploadFile(image);
+            blog.setImageUrl(imageUrl);
+        }
+
         blog.setAuthor(userService.getUserById(authorId));
         return blogToDTO(blogRepository.save(blogToEntity(blog)));
     }
@@ -81,6 +97,30 @@ public class BlogServiceImpl implements BlogService {
         }
 
         return blogToDTO(blogRepository.save(blogToEntity(blog)));
+    }
+
+    @Override
+    public BlogDTO changeBlogPostImage(UUID blogId, MultipartFile image) {
+        BlogDTO blog = getBlogById(blogId);
+
+        if (image.isEmpty()) {
+            blog.setImageUrl(null);
+
+            return updateBlogPost(blog, blogId);
+        }
+        else if (!Objects.requireNonNull(image.getContentType()).startsWith("image/")) {
+            throw new IllegalArgumentException("File must be an image");
+        }
+
+        String imageUrl = s3Service.uploadFile(image);
+
+        if (blog.getImageUrl() != null && !blog.getImageUrl().contains("googleusercontent.com")) {
+            s3Service.removeImage(blog.getImageUrl());
+        }
+
+        blog.setImageUrl(imageUrl);
+
+        return updateBlogPost(blog, blogId);
     }
 
     @Override
