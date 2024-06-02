@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 const Membership = () => {
+
   return (
     <div className="min-h-screen overflow-x-hidden">
       <Navbar />

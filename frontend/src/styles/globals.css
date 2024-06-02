@@ -20,4 +20,8 @@
     .bg-orange-gradient {
         @apply bg-gradient-to-t from-[#e28413] to-[#FBF3F1];
     }
+
+    .section-2 {
+        @apply bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out;
+    }
 }
