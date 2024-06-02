@@ -16,6 +16,20 @@ export default {
         "dark-400": "#1c1c21",
       },
     },
+    keyframes: {
+      slideInFromBottom: {
+        "0%": { transform: "translateY(100%)", opacity: "0" },
+        "100%": { transform: "translateY(0)", opacity: "1" },
+      },
+      slideOutFromBottom: {
+        "0%": { transform: "translateY(0)", opacity: "1" },
+        "100%": { transform: "translateY(100%)", opacity: "0" },
+      },
+    },
+    animation: {
+      slideInFromBottom: "slideInFromBottom 0.5s ease-in forwards",
+      slideOutFromBottom: "slideOutFromBottom 0.5s ease-out",
+    },
   },
   plugins: [require("tailwindcss-animate")],
 };
