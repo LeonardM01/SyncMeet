@@ -17,6 +17,10 @@
         @apply text-[24px] font-normal leading-[120%];
     }
 
+    .heading3-bold {
+        @apply text-[24px] font-bold leading-[120%];
+    }
+
     .heading4 {
         @apply text-[20px] font-normal leading-[120%];
     }
