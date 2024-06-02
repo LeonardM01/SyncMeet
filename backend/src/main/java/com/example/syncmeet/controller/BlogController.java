@@ -30,9 +30,9 @@ public class BlogController {
 
     @PostMapping("blog/{authorId}")
     public ResponseEntity<BlogDTO> createBlogPost(
-            @Valid @RequestBody BlogCreationRequestDTO blogDTO,
+            @Valid @RequestPart("data") BlogCreationRequestDTO blogDTO,
             @PathVariable UUID authorId,
-            @RequestBody MultipartFile image
+            @RequestPart("image") MultipartFile image
     )
     {
         BlogDTO blog = new BlogDTO();
