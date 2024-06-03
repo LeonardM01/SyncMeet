@@ -12,6 +12,12 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import ProfileEdit from "@/components/ProfileEdit";
 
 const localizer = momentLocalizer(moment);
 
@@ -21,7 +27,7 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCommandDialog, setShowCommandDialog] = useState(false);
 
-  const commandDialogRef = useRef(null); // Dodajmo ref za CommandDialog
+  const commandDialogRef = useRef(null);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -82,7 +88,7 @@ const Dashboard = () => {
 
           {showCommandDialog && (
           <Command 
-            ref={commandDialogRef} // Dodajmo ref na CommandDialog
+            ref={commandDialogRef}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-3/4 " 
             style={{ width: "511px", height: "348px" }}
           >
@@ -100,7 +106,16 @@ const Dashboard = () => {
               </CommandGroup>
               <CommandSeparator />
               <CommandGroup heading="Settings">
-                <CommandItem>Profile</CommandItem>
+              <Dialog>
+                    <CommandItem>
+                  <DialogTrigger>
+                    Profile
+                    </DialogTrigger>
+                    <DialogContent className="flex w-fit bg-light max-w-screen">
+                      <ProfileEdit />
+                    </DialogContent>
+                    </CommandItem>
+                  </Dialog>
                 <CommandItem>Billing</CommandItem>
                 <CommandItem>Settings</CommandItem>
               </CommandGroup>
@@ -113,10 +128,17 @@ const Dashboard = () => {
       {/* Sidebar */}
       <div className="w-64 bg-light-400 p-4 text-black">
         <div className="flex flex-col space-y-4 mt-10">
-          <div className="flex justify-center space-x-2">
-            <img src="/assets/dashboard/vector.svg" alt="Leonard Martinis" />
-            <h2 className="text-xl font-semibold">Leonard Martinis</h2>
-          </div>
+            <Dialog>
+              <DialogTrigger asChild>
+              <div className="flex justify-center space-x-2">
+                <img src="/assets/dashboard/vector.svg" alt="Leonard Martinis" />
+                <h2 className="text-xl font-semibold">Leonard Martinis</h2>
+              </div>
+              </DialogTrigger>
+              <DialogContent className="flex w-fit bg-light max-w-screen">
+                <ProfileEdit />
+              </DialogContent>
+            </Dialog>
           <div className="border-b border-gray-300 w-full my-2"></div>
           <p className="pb-6">No upcoming meetings</p>
           <button className="bg-orange text-white py-2 px-4 rounded">Create shared event</button>
