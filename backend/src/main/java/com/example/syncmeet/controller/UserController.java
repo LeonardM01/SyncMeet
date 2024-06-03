@@ -110,8 +110,8 @@ public class UserController {
      */
     @PostMapping("/users")
     public ResponseEntity<UserDTO> signUp(
-            @Valid @RequestBody UserSignUpRequestDTO userSignUpRequest,
-            @RequestBody MultipartFile image
+            @Valid @RequestPart("data") UserSignUpRequestDTO userSignUpRequest,
+            @RequestPart("image") MultipartFile image
             ) {
         UserDTO user = new UserDTO(
                 null,
