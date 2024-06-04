@@ -12,6 +12,9 @@ import {
 const Blog = () => {
   const { isLoading } = useAuth0();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 8; // adjust this value to change the number of cards per page
+  const totalCards = 23; // adjust this value to change the total number of cards
 
   if (isLoading) return <PageLoader />;
 
@@ -19,6 +22,14 @@ const Blog = () => {
     setIsExpanded(state);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentCards = [...Array(totalCards)].slice(indexOfFirstCard, indexOfLastCard);
 
   return (
     <div className="min-h-screen overflow-x-hidden relative">
@@ -43,7 +54,7 @@ const Blog = () => {
 
       <section className="relative">
         {isExpanded && (
-          <div className="pt-6 absolute h-full lg:px-32 md:px-12 sm:px-6 flex flex-col items-start w-full rounded-t-[30px] bg-[#2D2D2D] animate-slideInFromBottom">
+          <div className="pt-6 absolute h-full w-full lg:px-32 md:px-12 sm:px-6 flex flex-col items-start rounded-t-[30px] bg-[#2D2D2D] animate-slideInFromBottom overflow-y-auto">
             <div className="flex flex-col lg:flex-row lg:items-start mb-8 mt-16 mx-20">
               <img
                 src="/assets/blog/images/card_expanded.svg"
@@ -85,7 +96,7 @@ const Blog = () => {
               <h3 className="text-3xl font-bold mb-8">Another chapter title</h3>
               <p className="mb-8 text-2xl">
                 Et mi aliquet maecenas scelerisque eget aliquet maecenas non.
-                Vitae metus magnis gravida in amet auctor mattis. Nibh diam
+                Vitaemetus magnis gravida in amet auctor mattis. Nibh diam
                 nulla cursus quis tempor consectetur nunc arcu. Non diam mus sed
                 ornare. Sit quisque dolor pellentesque tincidunt netus risus.
                 Sed molestie sit lacus sollicitudin volutpat eget faucibus massa
@@ -105,7 +116,7 @@ const Blog = () => {
         )}
 
         <div className="justify-between w-full rounded-t-[30px] bg-[#2D2D2D] flex-between py-16 lg:px-32 md:px-12 sm:px-6 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
-          {[...Array(10)].map((_, idx) => (
+          {currentCards.map((_, idx) => (
             <Card key={idx} onClick={() => handleCardClick(true)}>
               <CardContent className="bg-light-400 p-0 rounded-[10px] cursor-pointer">
                 <CardHeader className="p-0 bg-light-400 rounded-[10px]">
@@ -115,7 +126,7 @@ const Blog = () => {
                     className="w-full h-[212px] object-cover rounded-t-[10px]"
                   />
                   <CardTitle className="px-2 py-3 text-3xl font-bold mb-2 text-black">
-                    Title {idx + 1}
+                    Title {idx + 1 + (currentPage - 1) * cardsPerPage}
                   </CardTitle>
                 </CardHeader>
 
@@ -129,6 +140,20 @@ const Blog = () => {
                 </CardFooter>
               </CardContent>
             </Card>
+          ))}
+        </div>
+
+        <div className="flex justify-center mb-8">
+          {[...Array(Math.ceil(totalCards / cardsPerPage))].map((_, idx) => (
+            <button
+              key={idx}
+              className={`px-4 py-2 rounded-lg ${
+                idx + 1 === currentPage? "bg-orange-400 text-white" : "bg-gray-200 text-gray-600"
+              }`}
+              onClick={() => handlePageChange(idx + 1)}
+            >
+              {idx + 1}
+            </button>
           ))}
         </div>
       </section>
