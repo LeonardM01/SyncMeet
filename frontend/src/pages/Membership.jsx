@@ -73,7 +73,25 @@ const Membership = () => {
               <p className="button">BASIC</p>
               <h2 className="pt-3 text-[31px] leading-[120%]">$5 / month</h2>
 
-              <Button className="!bg-transparent border button border-orange rounded-lg w-full mt-10 min-w-[320px]">
+              <Button className="border button rounded-lg w-full mt-10 min-w-[320px]"
+              style={{
+                cursor: 'pointer',
+                transition: 'background-color 0.5s ease-in-out, color 0.5s ease-in-out, border-color 0.5s ease-in-out',
+                color: 'white',
+                backgroundColor: 'transparent',
+                borderColor: 'orange',
+                borderWidth: 1,
+                borderStyle: 'solid'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'darkgreen';
+                e.target.style.borderColor = 'green';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderColor = 'orange';
+              }}
+              >
                 START SMALL
               </Button>
 
@@ -132,9 +150,22 @@ const Membership = () => {
               <p className="button">ADVANCED</p>
               <h2 className="pt-3 text-[31px] leading-[120%]">$12 / month</h2>
 
-              <Button className="bg-orange rounded-lg w-full mt-10 button-bold min-w-[320px]">
-                INVEST NOW!
-              </Button>
+              <Button className="bg-orange rounded-lg w-full mt-10 button-bold min-w-[320px]"
+              style={{
+                cursor: 'pointer',
+                transition: 'background-color 0.5s ease-in-out, color 0.5s ease-in-out'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'darkgreen';
+                e.target.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'orange';
+                e.target.style.color = 'black';
+              }}
+            >
+              INVEST NOW!
+            </Button>
 
               <ul className="flex self-start flex-col gap-y-[15px] mt-14">
                 <li className="flex-start gap-x-4">
