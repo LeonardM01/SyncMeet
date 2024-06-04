@@ -13,8 +13,8 @@ const Blog = () => {
   const { isLoading } = useAuth0();
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const cardsPerPage = 8; // adjust this value to change the number of cards per page
-  const totalCards = 23; // adjust this value to change the total number of cards
+  const cardsPerPage = 8;
+  const totalCards = 23;
 
   if (isLoading) return <PageLoader />;
 
