@@ -2,7 +2,12 @@ package com.example.syncmeet.controller;
 
 import com.example.syncmeet.dto.friendRequest.FriendRequestDTO;
 import com.example.syncmeet.dto.user.*;
+import com.example.syncmeet.error.ErrorResponse;
 import com.example.syncmeet.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +36,24 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all users as {@link UserDTO}s
      * in the body
      */
+    @Operation(summary = "Fetch all users", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successful retrieval of users",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -43,6 +66,32 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the user as {@link UserDTO},
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Fetch user by email", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successful retrieval of user",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/users/email/{email}")
     public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
         return ResponseEntity.ok(userService.getUserByEmail(email));
@@ -55,6 +104,32 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with all friends of the user as {@link UserDTO},
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Fetch all friends of a user", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successful retrieval of friends",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/users/friends/{id}")
     public ResponseEntity<List<UserDTO>> getFriends(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getAllFriends(id));
@@ -67,6 +142,32 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the user as {@link UserDTO},
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Fetch user by ID", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successful retrieval of user",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getUserById(id));
@@ -79,6 +180,32 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with all users of the event as {@link UserDTO}s
      * in the body
      */
+    @Operation(summary = "Fetch all users of an event", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successful retrieval of users",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/users/events/{eventId}")
     public ResponseEntity<List<UserDTO>> getUsersByEventId(@PathVariable UUID eventId) {
         return ResponseEntity.ok(userService.getUsersByEventId(eventId));
@@ -93,6 +220,40 @@ public class UserController {
      * in the body, or with status {@code 404 (Not Found)} if either user does not exist, or with status {@code 400 (Bad request)}
      * if friend request already exists
      */
+    @Operation(summary = "Send friend request", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Friend request sent",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {FriendRequestDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Friend request already exists",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PostMapping("/users/{userId}/friends/{friendId}")
     public ResponseEntity<FriendRequestDTO> sendFriendRequest(
             @PathVariable UUID userId,
@@ -108,6 +269,31 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and created user as {@link UserDTO} in the body,
      * or with status {@code 400 (Bad Request)} if the request is invalid
      */
+    @Operation(summary = "Sign up", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User created",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PostMapping("/users")
     public ResponseEntity<UserDTO> signUp(
             @Valid @RequestBody UserSignUpRequestDTO userSignUpRequest,
@@ -133,6 +319,40 @@ public class UserController {
      * or with status {@code 404 (Not found)} if the user does not exist,
      * or with status {@code 400 (Bad request)} if the request is invalid
      */
+    @Operation(summary = "Change username", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Username changed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/users/username/{id}")
     public ResponseEntity<UserDTO> changeUsername(
             @PathVariable UUID id,
@@ -151,6 +371,32 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and confirmation message in the body,
      * or with status {@code 404 (Not found)} if the friend request does not exist
      */
+    @Operation(summary = "Accept friend request", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Friend request accepted",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {Map.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Friend request not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/users/{userId}/friends/{friendId}")
     public ResponseEntity<Map<String, Object>> acceptFriendRequest(
             @PathVariable UUID userId,
@@ -171,6 +417,40 @@ public class UserController {
      * or with status {@code 400 (Bad request)} if the provided file is not an image,
      * or with status {@code 404 (Not found)} if the user does not exist
      */
+    @Operation(summary = "Change profile image", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Profile image changed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/users/profileImage/{id}")
     public ResponseEntity<UserDTO> changeProfileImage(
             @PathVariable UUID id,
@@ -188,6 +468,40 @@ public class UserController {
      * or with status {@code 404 (Not found)} if the user does not exist,
      * or with status {@code 400 (Bad request} if the request is invalid
      */
+    @Operation(summary = "Change subscription tier", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Tier changed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/users/tier/{id}")
     public ResponseEntity<UserDTO> changeTier(
             @PathVariable UUID id,
@@ -206,6 +520,32 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and confirmation message in the body,
      * or with status {@code 404 (Not found)} if either friend request does not exist or users are not friends
      */
+    @Operation(summary = "Reject friend request OR Remove friend", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Friend request rejected OR Friend removed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Friend request not found OR Users are not friends",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @DeleteMapping("/users/{userId}/friends/{friendId}")
     public ResponseEntity<Map<String, Object>> rejectFriendRequest(
             @PathVariable UUID userId,
@@ -231,6 +571,32 @@ public class UserController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and confirmation message in the body,
      * or with status {@code 404 (Not found)} if user does not exist
      */
+    @Operation(summary = "Remove user", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User deleted",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Map<String, Object>> removeUser(@PathVariable UUID id) {
         userService.deleteUser(id);
