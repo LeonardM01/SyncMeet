@@ -365,6 +365,49 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 
+    /**
+     * {@code PUT /users/credential/{id}} : Change first and last name
+     *
+     * @param id ID of the specified user
+     * @param userCredentials Request with new first and last name as {@link UserCredentialsChangeRequestDTO}
+     * @return {@link ResponseEntity} with status {@code 200 (Ok)} and updated user as {@link UserDTO} in the body,
+     * or with status {@code 404 (Not found)} if the user does not exist,
+     * or with status {@code 400 (Bad request)} if the request is invalid
+     */
+    @Operation(summary = "Change first and last name", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "First and last name changed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {UserDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/users/credential/{id}")
     public ResponseEntity<UserDTO> changeUserCredentials(
             @PathVariable UUID id,
