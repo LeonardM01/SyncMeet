@@ -1,7 +1,12 @@
 package com.example.syncmeet.controller;
 
 import com.example.syncmeet.dto.event.*;
+import com.example.syncmeet.error.ErrorResponse;
 import com.example.syncmeet.service.EventService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,6 +24,8 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = {"http://localhost:3000", "https://syncmeet.space" } , allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class EventController {
 
     private final EventService eventService;
@@ -37,6 +44,39 @@ public class EventController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the created event as {@link EventDTO},
      * or with status {@code 400 (Bad Request)} if the event is invalid
      */
+    @Operation(summary = "Create an event", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully created event",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PostMapping("/event/{ownerId}")
     public ResponseEntity<EventDTO> createEvent(
             @Valid @RequestBody EventCreationRequestDTO eventCreationRequestDTO,
@@ -61,6 +101,32 @@ public class EventController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all events of the user as {@link EventDTO}s,
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Get all events where user is owner", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully fetched events",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/event/owner/{id}")
     public ResponseEntity<List<EventDTO>> getEventsByOwner(@PathVariable UUID id) {
         return ResponseEntity.ok(eventService.getEventsByOwner(id));
@@ -76,6 +142,40 @@ public class EventController {
      * or with status {@code 400 (Bad request)} if endDate is before startDate,
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Get all pending events where user is owner and between dates", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully fetched pending events",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid date order",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/event/pending/owner/{id}")
     public ResponseEntity<List<EventDTO>> getPendingEventsByOwnerAndStartDateBetween(
             @PathVariable UUID id,
@@ -104,6 +204,40 @@ public class EventController {
      * or with status {@code 400 (Bad request)} if endDate is before startDate,
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Get all active events where user is owner and between dates", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully fetched active events",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid date order",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/event/active/owner/{id}")
     public ResponseEntity<List<EventDTO>> getActiveEventsByOwnerAndStartDateBetween(
             @PathVariable UUID id,
@@ -129,6 +263,32 @@ public class EventController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with a list of all events of the user as {@link EventDTO}s,
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Get all events where user is a member", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully fetched events",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/event/user/{id}")
     public ResponseEntity<List<EventDTO>> getEventsByUser(@PathVariable UUID id) {
         return ResponseEntity.ok(eventService.getEventsByUser(id));
@@ -144,6 +304,40 @@ public class EventController {
      * or with status {@code 400 (Bad request)} if endDate is before startDate,
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Get all pending events where user is a member and between dates", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully fetched pending events",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid date order",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/event/pending/{id}")
     public ResponseEntity<List<EventDTO>> getPendingEventsByUser(
             @PathVariable UUID id,
@@ -171,6 +365,40 @@ public class EventController {
      * or with status {@code 400 (Bad request)} if endDate is before startDate,
      * or with status {@code 404 (Not Found)} if the user does not exist
      */
+    @Operation(summary = "Get all active events where user is a member and between dates", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully fetched active events",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid date order",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/event/active/{id}")
     public ResponseEntity<List<EventDTO>> getActiveEventsByUser(
             @PathVariable UUID id,
@@ -195,6 +423,32 @@ public class EventController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and with the event as {@link EventDTO},
      * or with status {@code 404 (Not Found)} if the event does not exist
      */
+    @Operation(summary = "Get event by ID", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully fetched event",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("/event/{id}")
     public ResponseEntity<EventDTO> getEventById(@PathVariable UUID id) {
         return ResponseEntity.ok(eventService.getEventById(id));
@@ -208,6 +462,32 @@ public class EventController {
      * and a message that the event request was sent and the event request as {@link EventRequestDTO},
      * or with status {@code 404 (Not Found)} if the user or the event does not exist
      */
+    @Operation(summary = "Send event request", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Event request sent",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {Map.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User or event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/event/{eventId}/user/{userId}/send")
     public ResponseEntity<Map<String, Object>> sendEventRequest(
             @PathVariable UUID userId,
@@ -226,6 +506,32 @@ public class EventController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and a message that the user was removed from the event,
      * or with status {@code 404 (Not Found)} if the user or the event does not exist
      */
+    @Operation(summary = "Remove user from event", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User removed from event",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {Map.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User or event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/event/{eventId}/user/{userId}/remove")
     public ResponseEntity<Map<String, Object>> removeUserFromEvent(
             @PathVariable UUID userId,
@@ -245,6 +551,40 @@ public class EventController {
      * or with status {@code 404 (Not Found)} if the event does not exist,
      * or with status {@code 400 (Bad request} if the request is invalid
      */
+    @Operation(summary = "Update event name", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully updated event name",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/event/name/{id}")
     public ResponseEntity<EventDTO> updateName(
             @PathVariable UUID id,
@@ -263,6 +603,40 @@ public class EventController {
      * or with status {@code 404 (Not Found)} if the event does not exist,
      * or with status {@code 400 (Bad request} if the request is invalid
      */
+    @Operation(summary = "Update event description", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully updated event description",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/event/description/{id}")
     public ResponseEntity<EventDTO> updateDescription(
             @PathVariable UUID id,
@@ -281,6 +655,40 @@ public class EventController {
      * or with status {@code 404 (Not Found)} if the event does not exist,
      * or with status {@code 400 (Bad request} if the request is invalid
      */
+    @Operation(summary = "Update event color", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully updated event color",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/event/color/{id}")
     public ResponseEntity<EventDTO> updateColor(
             @PathVariable UUID id,
@@ -299,6 +707,40 @@ public class EventController {
      * or with status {@code 404 (Not Found)} if the event does not exist,
      * or with status {@code 400 (Bad request} if the request is invalid
      */
+    @Operation(summary = "Update event visibility", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully updated event visibility",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/event/visible/{id}")
     public ResponseEntity<EventDTO> updateVisibility(
             @PathVariable UUID id,
@@ -317,6 +759,40 @@ public class EventController {
      * or with status {@code 404 (Not Found)} if the event does not exist,
      * or with status {@code 400 (Bad request} if the request is invalid
      */
+    @Operation(summary = "Update event recurrence", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully updated event recurrence",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {EventDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/event/recurring/{id}")
     public ResponseEntity<EventDTO> updateRecurrence(
             @PathVariable UUID id,
@@ -335,6 +811,40 @@ public class EventController {
      * or with status {@code 404 (Not Found)} if the event does not exist,
      * or with status {@code 400 (Bad request} if the event is already accepted
      */
+    @Operation(summary = "Accept event", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Event accepted",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {Map.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Event already accepted",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("/event/accept/{userId}/{eventId}")
     public ResponseEntity<Map<String, Object>> acceptEvent(
             @PathVariable UUID userId,
@@ -354,6 +864,32 @@ public class EventController {
      * or with status {@code 404 (Not Found)} if the event does not exist,
      *
      */
+    @Operation(summary = "Reject event or remove event", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Event rejected or removed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {Map.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @DeleteMapping("/event/reject/{userId}/{eventId}")
     public ResponseEntity<Map<String, Object>> rejectEvent(
             @PathVariable UUID userId,
@@ -377,6 +913,32 @@ public class EventController {
      * @return {@link ResponseEntity} with status {@code 200 (Ok)} and a message that the event was deleted,
      * or with status {@code 404 (Not Found)} if the event does not exist
      */
+    @Operation(summary = "Delete event", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Event deleted",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {Map.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @DeleteMapping("/event/{id}")
     public ResponseEntity<Map<String, Object>> deleteEvent(@PathVariable UUID id) {
         eventService.deleteEvent(id);
