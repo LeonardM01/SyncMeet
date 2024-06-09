@@ -10,14 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Controller advice to create client-friendly JSON structures from server side exceptions
@@ -36,46 +35,45 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class,
             S3Exception.class
     })
-    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("error", ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        List<String> errors = Collections.singletonList(ex.getMessage());
+        ErrorResponse response = new ErrorResponse(errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleEntityNotFoundException(Exception ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("error", ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(Exception ex) {
+        List<String> errors = Collections.singletonList(ex.getMessage());
+        ErrorResponse response = new ErrorResponse(errors);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, Object> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errors = ex.getBindingResult().getAllErrors().stream()
+                .map(error -> ((FieldError) error).getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.toList());
+        ErrorResponse response = new ErrorResponse(errors);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         String message = ex.getMostSpecificCause().getMessage();
         Pattern uniquePattern = Pattern.compile("unique_(\\w+)");
         Matcher uniqueMatcher = uniquePattern.matcher(message);
 
+        String errorMessage;
         if (uniqueMatcher.find()) {
             String constraintName = uniqueMatcher.group(1);
             constraintName = constraintName.substring(0, 1).toUpperCase() + constraintName.substring(1);
-            String errorMessage = constraintName + " already used";
-            response.put("error", errorMessage);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            errorMessage = constraintName + " already used";
+        } else {
+            errorMessage = ex.getMessage();
         }
 
-        response.put("error", ex.getMessage());
+        List<String> errors = Collections.singletonList(errorMessage);
+        ErrorResponse response = new ErrorResponse(errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -83,9 +81,9 @@ public class GlobalExceptionHandler {
      * Handles exceptions thrown when a date is invalid
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Map<String, Object>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("error", "Invalid parameter: " + ex.getName());
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        List<String> errors = Collections.singletonList("Invalid parameter: " + ex.getName());
+        ErrorResponse response = new ErrorResponse(errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -93,18 +91,19 @@ public class GlobalExceptionHandler {
      * Mainly for handling exceptions generated by invalid tiers in requests
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         Throwable mostSpecificCause = ex.getMostSpecificCause();
 
         String errorMessage = mostSpecificCause.getMessage();
         // Check if the error message indicates an issue with an Enum type
         if (errorMessage.contains("Enum")) {
-            response.put("error", "Invalid tier type");
+            errorMessage = "Invalid tier type";
         } else {
-            response.put("error", "Error parsing JSON data: " + errorMessage);
+            errorMessage = "Error parsing JSON data: " + errorMessage;
         }
 
+        List<String> errors = Collections.singletonList(errorMessage);
+        ErrorResponse response = new ErrorResponse(errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

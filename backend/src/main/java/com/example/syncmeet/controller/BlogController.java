@@ -3,7 +3,12 @@ package com.example.syncmeet.controller;
 import com.example.syncmeet.dto.blog.BlogCreationRequestDTO;
 import com.example.syncmeet.dto.blog.BlogDTO;
 import com.example.syncmeet.dto.blog.BlogUpdateRequestDTO;
+import com.example.syncmeet.error.ErrorResponse;
 import com.example.syncmeet.service.BlogService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -30,6 +35,31 @@ public class BlogController {
         this.blogService = blogService;
     }
 
+    @Operation(summary = "Create a blog post", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully created blog post",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {BlogDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PostMapping("blog/{authorId}")
     public ResponseEntity<BlogDTO> createBlogPost(
             @Valid @RequestPart("data") BlogCreationRequestDTO blogDTO,
@@ -45,21 +75,117 @@ public class BlogController {
         return ResponseEntity.ok(blogService.createBlogPost(blog, authorId, image));
     }
 
+    @Operation(summary = "Get blog post by id", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved blog post",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {BlogDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Blog post not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("blog/get/{blogId}")
     public ResponseEntity<BlogDTO> getBlogPostById(@PathVariable UUID blogId) {
         return ResponseEntity.ok(blogService.getBlogById(blogId));
     }
 
+    @Operation(summary = "Get blog posts by author", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved blog posts",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {BlogDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Author doesnt exist",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("blog/author/{authorId}")
     public ResponseEntity<List<BlogDTO>> getBlogPostByAuthor(@PathVariable UUID authorId) {
         return ResponseEntity.ok(blogService.getBlogByAuthor(authorId));
     }
 
+    @Operation(summary = "Get blog posts by tag", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved blog posts",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {BlogDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("blog/tag")
     public ResponseEntity<List<BlogDTO>> getBlogByTag(String tag) {
         return ResponseEntity.ok(blogService.getBlogByTag(tag));
     }
 
+    @Operation(summary = "Get all blog posts between dates", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved blog posts",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {BlogDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @GetMapping("blog/filterDates")
     public ResponseEntity<List<BlogDTO>> getBlogBetweenCreationDates(
             @RequestParam(name = "start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
@@ -76,6 +202,40 @@ public class BlogController {
         return ResponseEntity.ok(blogs);
     }
 
+    @Operation(summary = "Update blog post", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully updated blog post",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {BlogDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Blog post not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("blog/update/{blogId}")
     public ResponseEntity<BlogDTO> updateBlogPost(
             @PathVariable UUID blogId,
@@ -90,6 +250,40 @@ public class BlogController {
         return ResponseEntity.ok(blogService.updateBlogPost(blog, blogId));
     }
 
+    @Operation(summary = "Change blog post image", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully changed blog post image",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {BlogDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Blog post not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @PutMapping("blog/changeImage/{blogId}")
     public ResponseEntity<BlogDTO> changeBlogPostImage(
             @PathVariable UUID blogId,
@@ -99,6 +293,32 @@ public class BlogController {
         return ResponseEntity.ok(blogService.changeBlogPostImage(blogId, image));
     }
 
+    @Operation(summary = "Delete blog post", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully deleted blog post",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {BlogDTO.class, ErrorResponse.class})
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Blog post not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     @DeleteMapping("blog/delete/{id}")
     public ResponseEntity<Map<String, Object>> deleteBlogPost(@Valid @PathVariable UUID id) {
 
