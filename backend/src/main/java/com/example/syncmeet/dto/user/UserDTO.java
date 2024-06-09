@@ -24,4 +24,8 @@ public class UserDTO {
     private String profileImageUrl;
 
     private TierType tier;
+
+    private String firstName;
+
+    private String lastName;
 }

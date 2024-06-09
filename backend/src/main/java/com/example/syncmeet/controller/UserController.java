@@ -118,7 +118,9 @@ public class UserController {
                 userSignUpRequest.getUsername(),
                 userSignUpRequest.getEmail(),
                 userSignUpRequest.getProfileImageUrl(),
-                userSignUpRequest.getTier()
+                userSignUpRequest.getTier(),
+                userSignUpRequest.getFirstName(),
+                userSignUpRequest.getLastName()
                 );
 
         return ResponseEntity.ok(userService.createUser(user, image));
@@ -140,6 +142,17 @@ public class UserController {
             ) {
         UserDTO user = userService.getUserById(id);
         user.setUsername(usernameChangeRequest.getUsername());
+        return ResponseEntity.ok(userService.updateUser(user, id));
+    }
+
+    @PutMapping("/users/credential/{id}")
+    public ResponseEntity<UserDTO> changeUserCredentials(
+            @PathVariable UUID id,
+            @Valid @RequestBody UserCredentialsChangeRequestDTO userCredentials
+    ) {
+        UserDTO user = userService.getUserById(id);
+        user.setFirstName(userCredentials.getFirstName());
+        user.setLastName(userCredentials.getLastName());
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 

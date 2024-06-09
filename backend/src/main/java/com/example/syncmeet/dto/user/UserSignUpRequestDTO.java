@@ -25,6 +25,14 @@ public class UserSignUpRequestDTO {
     @Email(message = "Email is invalid")
     private String email;
 
+    @NotNull(message = "First name is required")
+    @Size(max = 255, message = "First name is too long")
+    private String firstName;
+
+    @NotNull(message = "Last name is required")
+    @Size(max = 255, message = "Last name is too long")
+    private String lastName;
+
     private String profileImageUrl;
 
     @NotNull(message = "Tier is required")
